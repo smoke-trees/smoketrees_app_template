@@ -1,0 +1,9 @@
+import 'package:stac/stac_core.dart';
+import 'package:smoketrees_app_template/stac_runtime/widgets/layout/wildcard_page/wildcard_page.dart';
+
+import 'pages/page1.dart';
+import 'pages/page2.dart';
+
+@StacScreen(screenName: "wildcard_page")
+StacWidget wildcardPage() =>
+    WildcardPage(children: {'page1': page1(), 'page2': page2()});

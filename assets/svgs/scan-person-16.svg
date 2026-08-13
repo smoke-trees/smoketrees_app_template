@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 16 16" fill="#00000"><g fill="none"><path fill="#000000" d="M3 12.5A1.5 1.5 0 0 1 4.5 11h7a1.5 1.5 0 0 1 1.5 1.5V14H3z"/><path fill="#000000" d="M3 12.5A1.5 1.5 0 0 1 4.5 11h7a1.5 1.5 0 0 1 1.5 1.5V14H3z"/><path fill="#000000" d="M10.75 6.75a2.75 2.75 0 1 0-5.5 0a2.75 2.75 0 0 0 5.5 0"/><g fill="none" stroke="#968CE4" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Top-left -->
+  <path d="M5 1H3.5A2.5 2.5 0 0 0 1 3.5V5"/>
+  <!-- Top-right -->
+  <path d="M11 1h1.5A2.5 2.5 0 0 1 15 3.5V5"/>
+  <!-- Bottom-left -->
+  <path d="M5 15H3.5A2.5 2.5 0 0 1 1 12.5V11"/>
+  <!-- Bottom-right -->
+  <path d="M11 15h1.5A2.5 2.5 0 0 0 15 12.5V11"/>
+</g><defs><linearGradient id="fluentColorScanPerson160" x1="5.378" x2="5.995" y1="11.399" y2="14.682" gradientUnits="userSpaceOnUse"><stop offset=".125" stop-color="#9C6CFE"/><stop offset="1" stop-color="#7A41DC"/></linearGradient><linearGradient id="fluentColorScanPerson161" x1="8" x2="8.851" y1="10.643" y2="15.941" gradientUnits="userSpaceOnUse"><stop stop-color="#885EDB" stop-opacity="0"/><stop offset="1" stop-color="#E362F8"/></linearGradient><linearGradient id="fluentColorScanPerson162" x1="6.558" x2="9.361" y1="4.731" y2="9.207" gradientUnits="userSpaceOnUse"><stop offset=".125" stop-color="#9C6CFE"/><stop offset="1" stop-color="#7A41DC"/></linearGradient><linearGradient id="fluentColorScanPerson163" x1=".447" x2="11.425" y1="-.172" y2="17.561" gradientUnits="userSpaceOnUse"><stop offset=".015" stop-color="#3DCBFF"/><stop offset="1" stop-color="#0094F0"/></linearGradient></defs></g></svg>
