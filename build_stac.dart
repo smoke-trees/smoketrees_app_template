@@ -19,7 +19,7 @@ Future<void> main(List<String> args) async {
   }
 
   final url = args.first;
-  final binary = Platform.isWindows ? 'stac.exe' : 'stac';
+  final binary = Platform.isWindows ? 'stac-app.exe' : 'stac-app';
 
   final result = await Process.run('dart', [
     'compile',
