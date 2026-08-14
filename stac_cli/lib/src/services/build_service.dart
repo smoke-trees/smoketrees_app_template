@@ -246,7 +246,7 @@ class BuildService {
 
       final projectId =
           RegExp(r"projectId:\s*'([^']*)'").firstMatch(content)?.group(1) ??
-          'example/stac';
+          'stac';
 
       final sourceDir =
           RegExp(r"sourceDir:\s*'([^']*)'").firstMatch(content)?.group(1) ??
@@ -254,7 +254,7 @@ class BuildService {
 
       final outputDir =
           RegExp(r"outputDir:\s*'([^']*)'").firstMatch(content)?.group(1) ??
-          'example/stac/.build';
+          'stac/.build';
 
       return StacOptions(
         name: name,
@@ -270,8 +270,8 @@ class BuildService {
         name: 'Stac',
         description: 'Stac',
         projectId: 'stac',
-        sourceDir: 'example/stac',
-        outputDir: 'example/stac/.build',
+        sourceDir: 'stac',
+        outputDir: 'stac/.build',
       );
     }
   }

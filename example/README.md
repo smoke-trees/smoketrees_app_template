@@ -47,7 +47,7 @@ When adding code, use this ownership rule:
   root `lib/`.
 - Put application features, routes, controllers, backend integrations, and
   app-specific widgets in `example/lib/`.
-- Put deployable Stac screens and themes in `example/stac/lib/`.
+- Put deployable Stac screens and themes in `stac/lib/`.
 
 ## Scaffolding a custom Stac widget parser
 
