@@ -23,8 +23,8 @@ import 'utils/urls.dart';
 /// stac watch command:
 /// dart run stac_cli/bin/stac_watch.dart
 
-/// stac cli command:
-/// fvm dart compile exe stac_cli\bin\stac_cli.dart -D STAC_BASE_API_URL="http://192.168.1.17:8080" -o stac.exe
+/// stac cli command (Windows -> stac.exe, macOS/Linux -> stac):
+/// fvm dart run build_stac.dart "https://your-backend.com/api"
 
 ///App Build command
 /// fvm flutter build appbundle  --release --obfuscate --split-debug-info=C:\\Av\Work\fomo_app\debug-info

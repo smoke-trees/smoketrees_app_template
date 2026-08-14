@@ -95,7 +95,7 @@ That's the whole setup. Local dev routing is **on by default** — no flag neede
 
 ## Daily loop: the watch session
 
-`stac_watch` is a **second entrypoint** inside `stac_cli/`. It is *not* a `stac watch` subcommand of `stac.exe`; run it with `dart run` (or `fvm dart run`).
+`stac_watch` is a **second entrypoint** inside `stac_cli/`. It is *not* a `stac watch` subcommand of the compiled `stac` CLI; run it with `dart run` (or `fvm dart run`).
 
 ### What it does
 
@@ -204,24 +204,27 @@ With `--no-app` there's no app to talk to, so `r`/`R` print an advisory instead 
 
 ### 1. Compile the CLI (one time)
 
-`stac.exe` is a compiled binary with your backend URL baked in. `build_stac.bat` wraps the compile:
+The CLI is a compiled native binary with your backend URL baked in. `build_stac.dart` is the **single cross-platform build script** — it picks the output name for your OS automatically (`stac.exe` on Windows, `stac` on macOS/Linux). Run it with the same `dart`/`fvm` on any platform:
 
-```bat
-build_stac.bat "http://192.168.1.17:8080/api"
+```sh
+dart run build_stac.dart "http://192.168.1.17:8080/api"
 ```
 
 or by hand:
 
 ```sh
+# Windows
 dart compile exe stac_cli\bin\stac_cli.dart -D STAC_BASE_API_URL="https://your-backend.com/api" -o stac.exe
+# macOS / Linux
+dart compile exe stac_cli/bin/stac_cli.dart -D STAC_BASE_API_URL="https://your-backend.com/api" -o stac
 ```
 
-The URL is baked in at compile time.
+The URL is baked in at compile time. On macOS/Linux the binary is named `stac`; on Windows `stac.exe`.
 
 ### 2. Build the screens to JSON
 
 ```sh
-stac.exe build
+stac build
 ```
 
 Scans `stac/` for `@StacScreen` / `@StacThemeRef`, compiles each into JSON under **`stac/.build/`**, printing `✓ Generated screen: <name>.json` per artifact. `--validate` is accepted but is currently a no-op.
@@ -229,7 +232,7 @@ Scans `stac/` for `@StacScreen` / `@StacThemeRef`, compiles each into JSON under
 ### 3. Deploy to the backend
 
 ```sh
-stac.exe deploy
+stac deploy
 ```
 
 POSTs every file in `stac/.build` to `${STAC_BASE_API_URL}/app-screens/deploy` and `/app-themes/deploy`. `--skip-build` deploys what's already there without rebuilding.
@@ -249,7 +252,7 @@ smoketrees_app_template/
 │   │   ├── bottom_navigation/
 │   │   ├── wildcard_page/       #   wildcard_page + pages/{page1,page2}
 │   │   └── test page/           #   note: directory name contains a space
-│   ├── .build/                  # stac.exe build output (deploy pipeline)
+│   ├── .build/                  # stac build output (deploy pipeline)
 │   └── .dev-build/               # watch output (dev loop)
 ├── lib/
 │   ├── shared/                  # reusable common Flutter widgets
@@ -271,7 +274,7 @@ smoketrees_app_template/
 │                               #   key_commands, manifest
 ├── .stac/manifest.json         # build ledger (version/hash per screen/theme)
 ├── .fvmrc                      # Flutter 3.44.0
-├── build_stac.bat              # compile stac.exe with baked-in API URL
+├── build_stac.dart             # single cross-platform CLI build script
 ├── create_stac_parser.sh       # scaffold a custom Stac widget parser
 ├── create_stac_action.sh       # scaffold a custom Stac action parser
 └── pubspec.yaml
@@ -457,7 +460,7 @@ Both parsers are registered in `example/lib/stac_runtime/stac_registry.dart` (`W
 1. Create `stac/example/wildcard_page/pages/<name>.dart` returning a `StacWidget` (no annotation — it's a helper, not a screen).
 2. Add it to the map in `wildcard_page.dart`: `'<name>': <name>()`.
 3. Navigate to it with `StWildcardPageNavAction(wildcardPage: '<name>')`.
-4. `stac.exe build && stac.exe deploy` — or just save, if the watch session is running.
+4. `stac build && stac deploy` — or just save, if the watch session is running.
 
 Only step 4 reaches production. Steps 1–3 are DSL, so nothing here needs an app release.
 
@@ -499,22 +502,22 @@ return 'http://$host:$port';                              // local dev server
 
 So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DEV=true`. The watch session passes that define (plus host and port) automatically; a plain `flutter run` doesn't, and stays on `backendUrl`. `main.dart` reads the same flag to switch Stac's cache to `networkOnly` during dev.
 
-`STAC_BASE_API_URL` is unrelated to the app — it's the CLI's compile-time define, baked into `stac.exe`, used by `stac deploy`.
+`STAC_BASE_API_URL` is unrelated to the app — it's the CLI's compile-time define, baked into the `stac`/`stac.exe` binary, used by `stac deploy`.
 
 ## CLI reference
 
-`stac.exe` (compiled) is the full CLI; `dart run stac_cli/bin/stac_watch.dart` is the watch tool.
+`stac` (Windows: `stac.exe`) — the compiled CLI — is the full CLI; `dart run stac_cli/bin/stac_watch.dart` is the watch tool.
 
 | Command | Purpose |
 |---------|---------|
-| `stac.exe init` | Scaffold a Stac project (`stac/` sample, `default_stac_options.dart`, optional skills install). |
-| `stac.exe build` | Compile `stac/` → `stac/.build/` JSON. |
-| `stac.exe deploy` | Push `stac/.build/` to `${STAC_BASE_API_URL}/app-screens\|themes/deploy`. |
-| `stac.exe login` / `logout` / `status` | Cloud auth — currently no-ops; the auth check in `base_command.dart` is commented out. |
-| `stac.exe project create --name <n>` / `project list` | Cloud project management. |
-| `stac.exe skills add` | Install a skill. |
-| `stac.exe upgrade` | Self-update the CLI (`--version`, `--force`). |
-| `stac.exe --version` / `--help` | Version / usage. |
+| `stac init` | Scaffold a Stac project (`stac/` sample, `default_stac_options.dart`, optional skills install). |
+| `stac build` | Compile `stac/` → `stac/.build/` JSON. |
+| `stac deploy` | Push `stac/.build/` to `${STAC_BASE_API_URL}/app-screens\|themes/deploy`. |
+| `stac login` / `logout` / `status` | Cloud auth — currently no-ops; the auth check in `base_command.dart` is commented out. |
+| `stac project create --name <n>` / `project list` | Cloud project management. |
+| `stac skills add` | Install a skill. |
+| `stac upgrade` | Self-update the CLI (`--version`, `--force`). |
+| `stac --version` / `--help` | Version / usage. |
 | `dart run stac_cli/bin/stac_watch.dart` | Local hot-reload loop (see above). |
 
 Other flags worth knowing: `build --project <dir>`, `deploy --skip-build`, `project create --description <d>`, global `-v/--verbose`.
