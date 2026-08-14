@@ -2,7 +2,7 @@
 
 class AppUrls {
   // Unchanged â€” real backend, used by backendDio for everything non-Stac
-  static String backendUrl = "http://192.168.1.17:8080";
+  static String backendUrl = "http://your-backend.com/api";
 
   /// Only for Stac.initialize's baseUrl. Kept separate from backendUrl so
   /// /to-do, /auth, etc. keep hitting the real backend while Stac screens
@@ -23,7 +23,7 @@ class AppUrls {
       'STAC_DEV_HOST',
       defaultValue: 'localhost',
     );
-    const port = String.fromEnvironment('STAC_DEV_PORT', defaultValue: '8070');
+    const port = String.fromEnvironment('STAC_DEV_PORT', defaultValue: '8090');
     return 'http://$host:$port';
   }
 }

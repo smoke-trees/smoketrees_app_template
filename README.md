@@ -525,7 +525,5 @@ Other flags worth knowing: `build --project <dir>`, `deploy --skip-build`, `proj
 - **`stacBaseUrl` and `STAC_LOCAL_DEV` are compile-time.** Editing `urls.dart` needs a full restart of the spawned app (`q`, then relaunch) — a hot reload won't pick it up. Process env vars can't change `fromEnvironment` values either; only `--dart-define` can, which is why the `STAC_BASE_API_URL` env var in `.vscode/launch.json` has no effect on the app.
 - **Default host is a hardcoded LAN IP** (`192.168.1.17`). On another network the spawned app can't reach the dev server until you pass `--host` (use `localhost` for an emulator on the same machine).
 - **Port mismatch in the fallback.** The watch server defaults to `8090`, but `urls.dart`'s `STAC_DEV_PORT` fallback is `8070`. It only matters if the define goes missing — the watch session always passes the real port.
-- **Dev server binds `0.0.0.0` with no auth** and serves whatever is in `stac/.dev-build`. Fine on a trusted network; readable by anyone who can route to your machine otherwise.
-- **Request Auth Incomplete.** `example/lib/features/auth/sign_in/sign_in_page.dart:90-91` prefills credentials in `initState`, and they ship in any build.
 - **Themes cost a hot restart**, so editing `st_theme.dart` is a slower cycle than editing a screen.
 - **The `stac` git dependency is unpinned** (`ref: main`). Pin a commit SHA if you need reproducible builds.
