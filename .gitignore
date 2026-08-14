@@ -35,7 +35,6 @@ migrate_working_dir/
 /coverage/
 .agents
 stac.exe
-stac
 
 # Symbolication related
 app.*.symbols
