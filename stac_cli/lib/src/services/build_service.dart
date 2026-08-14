@@ -223,7 +223,6 @@ class BuildService {
   Future<StacOptions> _loadBuildConfigFromOptions(String projectDir) async {
     final optionsPath = path.join(
       projectDir,
-      'example',
       'lib',
       'app',
       'default_stac_options.dart',

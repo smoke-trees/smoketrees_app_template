@@ -13,7 +13,7 @@ import '../utils/http_client.dart';
 class DeployService {
   final HttpClientService _httpClient = HttpClientService.instance;
 
-  /// Deploy all built JSON files from the example Stac build directory.
+  /// Deploy all built JSON files from the lib Stac build directory.
   Future<void> deploy({String? projectPath}) async {
     final projectDir = projectPath ?? Directory.current.path;
 
@@ -26,7 +26,7 @@ class DeployService {
     // }
 
     // Build output directory produced by BuildService
-    final buildDirPath = path.join(projectDir, 'example', 'stac', '.build');
+    final buildDirPath = path.join(projectDir, 'stac', '.build');
     final buildDir = Directory(buildDirPath);
     if (!await buildDir.exists()) {
       throw StacException(
