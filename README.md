@@ -245,17 +245,17 @@ smoketrees_app_template/
 │   │   ├── st_theme.dart       #   @StacThemeRef(name: 'main_theme')
 │   │   ├── st_splash_page.dart
 │   │   ├── hello_world.dart    #   helper, no annotation
-│   │   ├── auth/               #   sign_in, sign_up
+│   │   ├── auth/                #   sign_in, sign_up
 │   │   ├── bottom_navigation/
-│   │   ├── wildcard_page/      #   wildcard_page + pages/{page1,page2}
-│   │   └── test page/          #   note: directory name contains a space
-│   ├── .build/                 # stac.exe build output (deploy pipeline)
-│   └── .dev-build/             # watch output (dev loop)
+│   │   ├── wildcard_page/       #   wildcard_page + pages/{page1,page2}
+│   │   └── test page/           #   note: directory name contains a space
+│   ├── .build/                  # stac.exe build output (deploy pipeline)
+│   └── .dev-build/               # watch output (dev loop)
 ├── lib/
-│   ├── shared/                 # reusable common Flutter widgets
-│   ├── core/                   # support required by common widgets
-│   ├── features/auth/          # common-widget dependency closure
-│   ├── features/splash/        # common-widget dependency closure
+│   ├── shared/                  # reusable common Flutter widgets
+│   ├── core/                     # support required by common widgets
+│   ├── features/auth/            # common-widget dependency closure
+│   ├── features/splash/          # common-widget dependency closure
 │   ├── theme/
 │   └── utils/
 ├── example/
@@ -277,7 +277,7 @@ smoketrees_app_template/
 └── pubspec.yaml
 ```
 
-> **Do NOT delete the `example/` folder.** It is not just a sample app — it contains dozens of reusable widgets under `example/lib/shared/` (buttons, cards, dialogs, fields, pages, players, chips, and app-wide widgets) plus the example Stac models, parsers, and actions under `example/lib/stac_runtime/` and `example/lib/features/`. These widgets can be copied or imported into the main `lib/` folder, and the runnable app, routes, and backend integration all live there. Removing it breaks the app, the watch loop, and the deploy pipeline.
+> **Only delete the `example/` folder if you're not using any of its custom widgets.** It is not just a sample app — it contains dozens of reusable widgets under `example/lib/shared/` (buttons, cards, dialogs, fields, pages, players, chips, and app-wide widgets) plus the example Stac models, parsers, and actions under `example/lib/stac_runtime/` and `example/lib/features/`. These widgets can be copied or imported into the main `lib/` folder, and the runnable app, routes, and backend integration all live there. If your project still depends on any of them, removing it breaks the app, the watch loop, and the deploy pipeline.
 
 ### Key flows
 

@@ -4,13 +4,14 @@ This directory contains the runnable application and its Stac screen DSL. It
 uses the reusable widgets, themes, models, and parsers from the root `lib/`
 directory.
 
-> **Do NOT delete this `example/` folder.** It is not just a sample app — it
-> holds dozens of reusable widgets under `example/lib/shared/` (buttons, cards,
-> dialogs, fields, pages, players, chips, app-wide widgets), the example Stac
-> models/parsers/actions under `example/lib/stac_runtime/` and
-> `example/lib/features/`, and the runnable app itself. Those widgets can be
-> copied or imported into the main `lib/` folder. Removing it breaks the app,
-> the watch loop, and the deploy pipeline.
+> **Only delete this `example/` folder if you're not using any of its custom
+> widgets.** It is not just a sample app — it holds dozens of reusable widgets
+> under `example/lib/shared/` (buttons, cards, dialogs, fields, pages, players,
+> chips, app-wide widgets), the example Stac models/parsers/actions under
+> `example/lib/stac_runtime/` and `example/lib/features/`, and the runnable
+> app itself. Those widgets can be copied or imported into the main `lib/`
+> folder. If your project still depends on any of them, removing it breaks
+> the app, the watch loop, and the deploy pipeline.
 
 ## Layout
 
