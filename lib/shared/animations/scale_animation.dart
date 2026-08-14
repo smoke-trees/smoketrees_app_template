@@ -15,14 +15,13 @@ class _ScaleAnimationState extends State<ScaleAnimation>
   late AnimationController controller;
   late Animation<double> animation;
 
-
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
-        duration: Duration(milliseconds: (500 * widget.delay).round()),
-        vsync: this);
-
+      duration: Duration(milliseconds: (500 * widget.delay).round()),
+      vsync: this,
+    );
 
     animation = Tween<double>(begin: 0, end: 1).animate(controller)
       ..addListener(() {
@@ -37,10 +36,7 @@ class _ScaleAnimationState extends State<ScaleAnimation>
     controller.forward();
     return Transform.scale(
       scale: animation.value,
-      child: Opacity(
-        opacity: animation.value,
-        child: widget.child,
-      ),
+      child: Opacity(opacity: animation.value, child: widget.child),
     );
   }
 

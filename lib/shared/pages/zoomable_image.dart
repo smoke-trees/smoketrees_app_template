@@ -38,17 +38,16 @@ class _ZoomableImageState extends State<ZoomableImage>
   @override
   void initState() {
     _animationController = AnimationController(
-        duration: const Duration(milliseconds: 200), vsync: this);
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final image = Image(
-      image: widget.imageProvider,
-      fit: widget.fit,
-    );
+    final image = Image(image: widget.imageProvider, fit: widget.fit);
     return SizedBox.expand(
       key: const Key('easy_image_sized_box'),
       child: Padding(
@@ -110,7 +109,8 @@ class _ZoomableImageState extends State<ZoomableImage>
 
   void _updateDoubleTapAnimation(Matrix4 begin, Matrix4 end) {
     _doubleTapAnimation = Matrix4Tween(begin: begin, end: end).animate(
-        CurveTween(curve: Curves.easeInOut).animate(_animationController));
+      CurveTween(curve: Curves.easeInOut).animate(_animationController),
+    );
     _doubleTapAnimation?.addListener(_animationListener);
     _doubleTapAnimation?.addStatusListener(_animationStatusListener);
   }

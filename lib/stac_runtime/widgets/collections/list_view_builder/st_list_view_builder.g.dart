@@ -12,8 +12,9 @@ StListViewBuilder _$StListViewBuilderFromJson(Map<String, dynamic> json) =>
       items: (json['items'] as List<dynamic>?)
           ?.map((e) => e as Map<String, dynamic>)
           .toList(),
-      itemTemplate:
-          StacWidget.fromJson(json['itemTemplate'] as Map<String, dynamic>),
+      itemTemplate: StacWidget.fromJson(
+        json['itemTemplate'] as Map<String, dynamic>,
+      ),
       loadingWidget: json['loadingWidget'] as Map<String, dynamic>?,
       errorWidget: json['errorWidget'] as Map<String, dynamic>?,
       emptyWidget: json['emptyWidget'] as Map<String, dynamic>?,

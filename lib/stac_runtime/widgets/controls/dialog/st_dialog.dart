@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:stac/stac_core.dart';
 import 'package:smoketrees_app_template/enums/st_enums/st_curves.dart';
 import 'package:smoketrees_app_template/enums/st_enums/st_semantics_role.dart';
+import 'package:stac/stac_core.dart';
 
 part 'st_dialog.g.dart';
 

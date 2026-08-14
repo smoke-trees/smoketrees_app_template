@@ -67,11 +67,7 @@ class _CustomPopupState extends State<CustomPopup>
 showCustomPopup(BuildContext context, Widget child) {
   OverlayEntry overlayEntry = OverlayEntry(
     maintainState: false,
-    builder: (context) => Stack(
-      children: [
-        CustomPopup(child: child),
-      ],
-    ),
+    builder: (context) => Stack(children: [CustomPopup(child: child)]),
   );
 
   Overlay.of(context).insert(overlayEntry);

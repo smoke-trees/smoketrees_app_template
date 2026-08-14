@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../utils/utils.dart';
-
 import 'colors.dart';
 
 InputDecoration filledInputDecoration({
@@ -23,7 +21,7 @@ InputDecoration filledInputDecoration({
     isDense: true,
     hintText: hintText,
     prefixIcon: prefixIcon,
-    contentPadding: 16.p,
+    contentPadding: const EdgeInsets.all(16),
     suffixIcon: suffixIcon,
     prefix: prefix,
     suffix: suffix,
@@ -71,7 +69,7 @@ commonInputDecoration({
   return InputDecoration(
     // contentPadding: EdgeInsets.zero,
     // alignLabelWithHint: true,/
-    contentPadding: 10.bp,
+    contentPadding: const EdgeInsets.only(bottom: 10),
     labelText: showLabel ? labelText : null,
     labelStyle: Get.textTheme.bodyLarge?.copyWith(
       fontSize: 14,

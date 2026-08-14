@@ -1,4 +1,4 @@
-import 'package:stac_core/core/stac_widget.dart';
+import 'package:stac/stac_core.dart';
 
 class StFutureData extends StacWidget {
   final String endpoint;

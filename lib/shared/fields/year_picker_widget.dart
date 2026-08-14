@@ -28,18 +28,13 @@ class _YearPickerWidgetState extends State<YearPickerWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        Text(
-          widget.title ?? "Select Year",
-          style: Get.textTheme.displaySmall,
-        ),
+        Text(widget.title ?? "Select Year", style: Get.textTheme.displaySmall),
         const SizedBox(height: 10),
         SizedBox(
           height: 250,
           child: Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.light(
-                primary: Colors.black,
-              ),
+              colorScheme: const ColorScheme.light(primary: Colors.black),
               textButtonTheme: TextButtonThemeData(
                 style: TextButton.styleFrom(foregroundColor: Colors.black),
               ),
@@ -47,8 +42,9 @@ class _YearPickerWidgetState extends State<YearPickerWidget> {
             child: YearPicker(
               firstDate: widget.firstDate ?? DateTime(1900),
               lastDate: widget.lastDate ?? DateTime.now(),
-              selectedDate:
-                  DateTime(widget.initialValue?.year ?? DateTime.now().year),
+              selectedDate: DateTime(
+                widget.initialValue?.year ?? DateTime.now().year,
+              ),
               onChanged: (DateTime dateTime) {
                 widget.onChanged?.call(dateTime);
                 Get.back();

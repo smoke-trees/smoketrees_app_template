@@ -21,26 +21,17 @@ class Clipper extends CustomClipper<Path> {
     if (radius != null) {
       return Path()
         ..fillType = PathFillType.evenOdd
-        ..addRRect(RRect.fromRectAndRadius(
-            Rect.fromLTWH(
-              offset.dx,
-              offset.dy,
-              width,
-              height,
-            ),
-            Radius.circular(radius!)))
+        ..addRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(offset.dx, offset.dy, width, height),
+            Radius.circular(radius!),
+          ),
+        )
         ..addRect(Offset.zero & size);
     }
     return Path()
       ..fillType = PathFillType.evenOdd
-      ..addRect(
-        Rect.fromLTWH(
-          offset.dx,
-          offset.dy,
-          width,
-          height,
-        ),
-      )
+      ..addRect(Rect.fromLTWH(offset.dx, offset.dy, width, height))
       ..addRect(Offset.zero & size);
   }
 

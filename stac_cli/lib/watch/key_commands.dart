@@ -59,11 +59,7 @@ class KeyCommands {
       }
     }
 
-    _sub = stdin.listen(
-      _onBytes,
-      onError: (Object _) {},
-      cancelOnError: false,
-    );
+    _sub = stdin.listen(_onBytes, onError: (Object _) {}, cancelOnError: false);
   }
 
   void _onBytes(List<int> bytes) {

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 class DashedDivider extends StatelessWidget {
-  const DashedDivider(
-      {Key? key, this.height = 1, this.width = 4, this.color = Colors.black})
-      : super(key: key);
+  const DashedDivider({
+    Key? key,
+    this.height = 1,
+    this.width = 4,
+    this.color = Colors.black,
+  }) : super(key: key);
   final double height;
   final double width;
   final Color color;
@@ -23,9 +26,7 @@ class DashedDivider extends StatelessWidget {
             return SizedBox(
               width: dashWidth,
               height: dashHeight,
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: color),
-              ),
+              child: DecoratedBox(decoration: BoxDecoration(color: color)),
             );
           }),
         );

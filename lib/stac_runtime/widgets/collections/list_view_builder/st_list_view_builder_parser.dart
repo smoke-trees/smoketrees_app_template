@@ -2,13 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:stac/stac.dart';
 
-import '../../../../core/network/dio_controllers/backend_dio.dart';
 import 'st_list_view_builder.dart';
 
 class StListViewBuilderParser extends StacParser<StListViewBuilder> {
   final Dio dio;
 
-  StListViewBuilderParser({Dio? dio}) : dio = dio ?? backendDio.dio;
+  StListViewBuilderParser(this.dio);
 
   @override
   String get type => 'list_view_builder';
@@ -234,7 +233,7 @@ class _PagedListViewState extends State<_PagedListView> {
   @override
   Widget build(BuildContext context) {
     final model = widget.model;
-    final parser = StListViewBuilderParser(dio: widget.dio);
+    final parser = StListViewBuilderParser(widget.dio);
 
     if (_isInitialLoading) {
       return model.loadingWidget != null

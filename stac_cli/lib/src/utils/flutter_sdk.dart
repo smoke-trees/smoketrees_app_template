@@ -17,8 +17,10 @@ class FlutterSdk {
 
   /// Absolute path to the project's dart executable (fvm shim), or null to
   /// fall back to `dart` on PATH.
-  static String? resolveDartSync(String projectRoot) =>
-      _dartCache.putIfAbsent(projectRoot, () => _resolveBin(projectRoot, 'dart'));
+  static String? resolveDartSync(String projectRoot) => _dartCache.putIfAbsent(
+    projectRoot,
+    () => _resolveBin(projectRoot, 'dart'),
+  );
 
   /// Absolute path to the project's flutter executable (fvm shim), or null
   /// to fall back to `flutter` on PATH.

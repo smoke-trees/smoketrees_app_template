@@ -18,10 +18,10 @@ StConditionalWidget _$StConditionalWidgetFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$StConditionalWidgetToJson(
-        StConditionalWidget instance) =>
-    <String, dynamic>{
-      'when': instance.when,
-      'whenTrue': instance.whenTrue?.toJson(),
-      'whenFalse': instance.whenFalse?.toJson(),
-      'type': instance.type,
-    };
+  StConditionalWidget instance,
+) => <String, dynamic>{
+  'when': instance.when,
+  'whenTrue': instance.whenTrue?.toJson(),
+  'whenFalse': instance.whenFalse?.toJson(),
+  'type': instance.type,
+};

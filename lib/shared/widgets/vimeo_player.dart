@@ -145,7 +145,8 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
   }
 
   Uri _videoPage(String videoId) {
-    final html = '''
+    final html =
+        '''
 <!DOCTYPE html>
 <html>
    <head>
@@ -240,8 +241,9 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
    </body>
 </html>
     ''';
-    final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(html));
+    final String contentBase64 = base64Encode(
+      const Utf8Encoder().convert(html),
+    );
     return Uri.parse('data:text/html;base64,$contentBase64');
   }
 
@@ -262,8 +264,6 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return WebViewWidget(
-      controller: _controller,
-    );
+    return WebViewWidget(controller: _controller);
   }
 }

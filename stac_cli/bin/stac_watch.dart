@@ -12,8 +12,9 @@ Future<void> main(List<String> args) async {
   final buildService = BuildService();
 
   final resolver = BuildTargetResolver(
-    stacEntryDir: '$projectRoot/stac',
-    libDir: '$projectRoot/lib',
+    stacEntryDir: '$projectRoot/example/stac',
+    libDir: '$projectRoot/example/lib',
+    dependencyDirs: ['$projectRoot/lib'],
 
     // A file is a screen/theme entry if it carries the annotation — mirrors
     // what BuildService.build() already scans for.
@@ -68,6 +69,8 @@ Future<void> main(List<String> args) async {
       ),
     ),
     isDevelopment: !args.contains('--no-dev'),
+    buildDirName: 'example/stac/.dev-build',
+    appTarget: 'example/lib/main.dart',
   );
 
   ProcessSignal.sigint.watch().listen((_) async {

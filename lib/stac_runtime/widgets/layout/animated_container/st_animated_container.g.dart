@@ -21,34 +21,37 @@ StAnimatedContainer _$StAnimatedContainerFromJson(Map<String, dynamic> json) =>
       decoration: json['decoration'] == null
           ? null
           : StacBoxDecoration.fromJson(
-              json['decoration'] as Map<String, dynamic>),
+              json['decoration'] as Map<String, dynamic>,
+            ),
       decorationWhen: json['decorationWhen'],
       decorationWhenTrue: json['decorationWhenTrue'] == null
           ? null
           : StacBoxDecoration.fromJson(
-              json['decorationWhenTrue'] as Map<String, dynamic>),
+              json['decorationWhenTrue'] as Map<String, dynamic>,
+            ),
       decorationWhenFalse: json['decorationWhenFalse'] == null
           ? null
           : StacBoxDecoration.fromJson(
-              json['decorationWhenFalse'] as Map<String, dynamic>),
+              json['decorationWhenFalse'] as Map<String, dynamic>,
+            ),
       child: json['child'] == null
           ? null
           : StacWidget.fromJson(json['child'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$StAnimatedContainerToJson(
-        StAnimatedContainer instance) =>
-    <String, dynamic>{
-      'durationMs': instance.durationMs,
-      'width': instance.width,
-      'height': instance.height,
-      'padding': instance.padding?.toJson(),
-      'margin': instance.margin?.toJson(),
-      'alignment': instance.alignment,
-      'decoration': instance.decoration?.toJson(),
-      'decorationWhen': instance.decorationWhen,
-      'decorationWhenTrue': instance.decorationWhenTrue?.toJson(),
-      'decorationWhenFalse': instance.decorationWhenFalse?.toJson(),
-      'child': instance.child?.toJson(),
-      'type': instance.type,
-    };
+  StAnimatedContainer instance,
+) => <String, dynamic>{
+  'durationMs': instance.durationMs,
+  'width': instance.width,
+  'height': instance.height,
+  'padding': instance.padding?.toJson(),
+  'margin': instance.margin?.toJson(),
+  'alignment': instance.alignment,
+  'decoration': instance.decoration?.toJson(),
+  'decorationWhen': instance.decorationWhen,
+  'decorationWhenTrue': instance.decorationWhenTrue?.toJson(),
+  'decorationWhenFalse': instance.decorationWhenFalse?.toJson(),
+  'child': instance.child?.toJson(),
+  'type': instance.type,
+};

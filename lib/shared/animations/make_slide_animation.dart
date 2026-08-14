@@ -30,12 +30,10 @@ class _MakeSlideAnimationState extends State<MakeSlideAnimation>
       vsync: this,
       duration: widget.duration,
     );
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: widget.curve),
-    );
+    _offsetAnimation =
+        Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animationController, curve: widget.curve),
+        );
     _animationController.forward();
   }
 
@@ -48,9 +46,6 @@ class _MakeSlideAnimationState extends State<MakeSlideAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _offsetAnimation,
-      child: widget.child,
-    );
+    return SlideTransition(position: _offsetAnimation, child: widget.child);
   }
 }
