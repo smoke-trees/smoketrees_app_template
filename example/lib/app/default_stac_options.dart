@@ -22,6 +22,6 @@ StacOptions get defaultStacOptions => StacOptions(
   name: 'stac_test_pro',
   description: '',
   projectId: 'wmal7BdlQ4f0VMiUuZQJ',
-  sourceDir: 'example/stac',
-  outputDir: 'example/stac/.build',
+  sourceDir: 'stac',
+  outputDir: 'stac/.build',
 );
