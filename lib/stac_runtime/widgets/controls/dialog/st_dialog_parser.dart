@@ -1,9 +1,9 @@
 import 'dart:ui' show SemanticsRole;
 
 import 'package:flutter/material.dart';
-import 'package:stac/stac.dart';
 import 'package:smoketrees_app_template/enums/st_enums/st_curves.dart';
 import 'package:smoketrees_app_template/enums/st_enums/st_semantics_role.dart';
+import 'package:stac/stac.dart';
 
 import 'st_dialog.dart';
 

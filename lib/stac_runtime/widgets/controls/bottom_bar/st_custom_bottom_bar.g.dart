@@ -8,10 +8,12 @@ part of 'st_custom_bottom_bar.dart';
 
 StCustomBottomBar _$StCustomBottomBarFromJson(Map<String, dynamic> json) =>
     StCustomBottomBar(
-      labels:
-          (json['labels'] as List<dynamic>).map((e) => e as String).toList(),
-      svgIcons:
-          (json['svgIcons'] as List<dynamic>).map((e) => e as String).toList(),
+      labels: (json['labels'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      svgIcons: (json['svgIcons'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       svgFilledIcons: (json['svgFilledIcons'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),

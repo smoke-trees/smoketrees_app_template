@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../../theme/colors.dart';
 
-import '../../../../utils/utils.dart';
 import 'st_custom_bottom_bar.dart';
 
 class CustomBottomBar extends StatefulWidget {
@@ -21,13 +19,6 @@ class CustomBottomBar extends StatefulWidget {
 }
 
 class _CustomBottomBarState extends State<CustomBottomBar> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,10 +46,10 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
 
           final icon = AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            padding: 8.p,
+            padding: const EdgeInsets.all(8),
             decoration: ShapeDecoration(
               shape: const CircleBorder(),
-              color: isSelected ? Colors.black : AppColors.transparent,
+              color: isSelected ? Colors.black : Colors.transparent,
             ),
             child: SvgPicture.asset(
               isSelected

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:smoketrees_app_template/theme/colors.dart';
 
 class MainButton extends StatefulWidget {
   final Function() onTap;
@@ -37,18 +35,19 @@ class MainButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _MainButtonState createState() => _MainButtonState();
+  State<MainButton> createState() => _MainButtonState();
 }
 
 class _MainButtonState extends State<MainButton> {
-  RxBool isLoadingButton = false.obs;
+  bool isLoadingButton = false;
+
   @override
   Widget build(BuildContext context) {
     Color color = widget.isOutlined
-        ? widget.textColor ?? AppColors.white
+        ? widget.textColor ?? Colors.white
         : widget.color ?? Colors.black;
     if (widget.disabled) {
-      color = AppColors.dark.withValues(alpha: 0.4);
+      color = Colors.black.withValues(alpha: 0.4);
     }
     return Material(
       borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -58,10 +57,13 @@ class _MainButtonState extends State<MainButton> {
             ? null
             : () async {
                 if (widget.showLoader) {
-                  if (!isLoadingButton.value) {
-                    isLoadingButton.value = true;
-                    await widget.onTap();
-                    isLoadingButton.value = false;
+                  if (!isLoadingButton) {
+                    setState(() => isLoadingButton = true);
+                    try {
+                      await widget.onTap();
+                    } finally {
+                      if (mounted) setState(() => isLoadingButton = false);
+                    }
                   }
                 } else {
                   widget.onTap();
@@ -85,37 +87,35 @@ class _MainButtonState extends State<MainButton> {
             ),
           ),
           child: widget.showLoader
-              ? Obx(
-                  () => !isLoadingButton.value
-                      ? Text(
-                          widget.title ?? '',
-                          style:
-                              widget.textStyle ??
-                              Get.textTheme.bodyLarge?.copyWith(
-                                color: widget.isOutlined
-                                    ? widget.color ?? Colors.black
-                                    : widget.textColor ?? AppColors.textWhite,
-                                fontSize: widget.fontSize ?? 16,
-                              ),
-                        )
-                      : SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CircularProgressIndicator(
-                            color: widget.loadingColor,
-                            strokeCap: StrokeCap.round,
-                            // strokeWidth: 2,
-                          ),
+              ? !isLoadingButton
+                    ? Text(
+                        widget.title ?? '',
+                        style:
+                            widget.textStyle ??
+                            Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: widget.isOutlined
+                                  ? widget.color ?? Colors.black
+                                  : widget.textColor ?? Colors.white,
+                              fontSize: widget.fontSize ?? 16,
+                            ),
+                      )
+                    : SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          color: widget.loadingColor,
+                          strokeCap: StrokeCap.round,
+                          // strokeWidth: 2,
                         ),
-                )
+                      )
               : Text(
                   widget.title ?? '',
                   style:
                       widget.textStyle ??
-                      Get.textTheme.bodyLarge?.copyWith(
+                      Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: widget.isOutlined
                             ? widget.color ?? Colors.black
-                            : widget.textColor ?? AppColors.textWhite,
+                            : widget.textColor ?? Colors.white,
                         fontSize: widget.fontSize ?? 16,
                       ),
                 ),

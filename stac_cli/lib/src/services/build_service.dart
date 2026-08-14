@@ -223,6 +223,7 @@ class BuildService {
   Future<StacOptions> _loadBuildConfigFromOptions(String projectDir) async {
     final optionsPath = path.join(
       projectDir,
+      'example',
       'lib',
       'app',
       'default_stac_options.dart',
@@ -245,7 +246,7 @@ class BuildService {
 
       final projectId =
           RegExp(r"projectId:\s*'([^']*)'").firstMatch(content)?.group(1) ??
-          'stac';
+          'example/stac';
 
       final sourceDir =
           RegExp(r"sourceDir:\s*'([^']*)'").firstMatch(content)?.group(1) ??
@@ -253,7 +254,7 @@ class BuildService {
 
       final outputDir =
           RegExp(r"outputDir:\s*'([^']*)'").firstMatch(content)?.group(1) ??
-          'stac/.build';
+          'example/stac/.build';
 
       return StacOptions(
         name: name,
@@ -269,8 +270,8 @@ class BuildService {
         name: 'Stac',
         description: 'Stac',
         projectId: 'stac',
-        sourceDir: 'stac',
-        outputDir: 'stac/.build',
+        sourceDir: 'example/stac',
+        outputDir: 'example/stac/.build',
       );
     }
   }

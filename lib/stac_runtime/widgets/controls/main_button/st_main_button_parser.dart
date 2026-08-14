@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:stac/stac.dart';
 
-import '../../../../shared/buttons/main_button.dart';
-import '../../../../utils/console_logger.dart';
-import '../../../actions/action_registry.dart';
+import 'main_button.dart';
 import 'st_main_button.dart';
 
+typedef StacActionKeyResolver =
+    Future<void> Function(BuildContext context, String actionKey);
+
 class StMainButtonParser extends StacParser<StMainButton> {
+  const StMainButtonParser({this.onActionKey});
+
+  final StacActionKeyResolver? onActionKey;
+
   @override
   StMainButton getModel(Map<String, dynamic> json) =>
       StMainButton.fromJson(json);
@@ -19,21 +24,18 @@ class StMainButtonParser extends StacParser<StMainButton> {
     return MainButton(
       onTap: () async {
         try {
-          if (model.onPressed != null) {
-            // New path Ã¢â‚¬â€ the action IS the JSON, written directly in Dart
-            // or authored raw as JSON; no registry lookup needed.
-            await model.onPressed?.parse(context);
+          final action = model.onPressed;
+          if (action != null) {
+            await action.parse(context);
             return;
           }
-          // Legacy path Ã¢â‚¬â€ kept for existing screens still using actionKey.
-          final action = ActionRegistry.resolve(model.actionKey);
-          if (action != null) {
-            await action(context);
-          } else {
-            ConsoleLogger.warn('No action registered for key: ${model.actionKey}');
+
+          final actionKey = model.actionKey;
+          if (actionKey != null && onActionKey != null) {
+            await onActionKey!(context, actionKey);
           }
-        } catch (e) {
-          ConsoleLogger.error('Error in action: $e');
+        } catch (error, stackTrace) {
+          debugPrint('StMainButton action failed: $error\n$stackTrace');
         }
       },
       title: model.title,

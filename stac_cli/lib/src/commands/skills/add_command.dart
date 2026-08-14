@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as path;
+import 'package:stac_cli/stac_cli.dart';
 
-import '../../utils/console_logger.dart';
 import '../base_command.dart';
 
 /// Command to add Stac AI agent skills

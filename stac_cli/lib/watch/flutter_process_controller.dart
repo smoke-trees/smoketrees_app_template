@@ -26,6 +26,7 @@ class FlutterProcessController {
     this.port = 8090,
     this.extraArgs = const [],
     this.isDevelopment = true,
+    this.appTarget = 'lib/main.dart',
   });
 
   final String projectRoot;
@@ -33,6 +34,7 @@ class FlutterProcessController {
   final int port;
   final List<String> extraArgs;
   final bool isDevelopment;
+  final String appTarget;
 
   Process? _process;
   String? _appId;
@@ -48,7 +50,7 @@ class FlutterProcessController {
     final args = [
       'run',
       '--machine',
-      '--target=lib/main.dart',
+      '--target=$appTarget',
       '--dart-define=STAC_LOCAL_DEV=$isDevelopment',
       '--dart-define=STAC_DEV_HOST=$host',
       '--dart-define=STAC_DEV_PORT=$port',

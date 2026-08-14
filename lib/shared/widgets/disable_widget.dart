@@ -19,10 +19,7 @@ class DisableWidget extends StatelessWidget {
     } else {
       return InkWell(
         onTap: onTap,
-        child: IgnorePointer(
-          ignoring: true,
-          child: child,
-        ),
+        child: IgnorePointer(ignoring: true, child: child),
       );
     }
   }

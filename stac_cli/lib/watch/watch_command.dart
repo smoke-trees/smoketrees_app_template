@@ -30,6 +30,7 @@ class WatchCommand {
     this.host = '192.168.1.17', // physical-device default per your call
     this.debounce = const Duration(milliseconds: 300),
     this.isDevelopment = true,
+    this.appTarget = 'lib/main.dart',
   });
 
   final String projectRoot;
@@ -42,6 +43,7 @@ class WatchCommand {
   final String host;
   final Duration debounce;
   final bool isDevelopment;
+  final String appTarget;
 
   late final Manifest _manifest;
   late final DevHttpServer _server;
@@ -67,6 +69,7 @@ class WatchCommand {
       host: host,
       port: port,
       isDevelopment: isDevelopment,
+      appTarget: appTarget,
     );
     if (spawnApp) await _flutterCtrl.start(deviceId: deviceId);
 
@@ -77,8 +80,7 @@ class WatchCommand {
     );
     await _buildAndApply(resolver.allTargets(), triggerReload: false);
 
-    final watchDirs = [resolver.stacEntryDir, resolver.libDir];
-    for (final dir in watchDirs) {
+    for (final dir in resolver.watchDirs) {
       if (!await Directory(dir).exists()) continue;
       _watchSubs.add(DirectoryWatcher(dir).events.listen(_onFsEvent));
     }

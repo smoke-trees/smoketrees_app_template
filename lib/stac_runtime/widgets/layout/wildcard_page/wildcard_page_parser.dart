@@ -1,6 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:stac/stac.dart';
-import 'package:smoketrees_app_template/shared/cards/custom_error_cards.dart';
 
 import 'wildcard_page.dart';
 
@@ -19,8 +18,8 @@ class WildcardPageParser extends StacParser<WildcardPage> {
         arg is Map<String, dynamic> &&
         arg.containsKey('wildcardPage')) {
       return model.children[arg['wildcardPage']]?.parse(context) ??
-          CustomErrorCard(error: 'Unexpected error in parsing');
+          const Center(child: Text('Unknown wildcard page'));
     }
-    return CustomErrorCard(error: 'No widgets added or argumentIndex is null');
+    return const Center(child: Text('No wildcard page was selected'));
   }
 }

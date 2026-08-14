@@ -1,6 +1,7 @@
-import '../base_command.dart';
+import 'package:stac_cli/stac_cli.dart';
+
 import '../../services/project_service.dart';
-import '../../utils/console_logger.dart';
+import '../base_command.dart';
 
 /// Command for creating a new project on the cloud
 class CreateCommand extends BaseCommand {

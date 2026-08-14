@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:stac_cli/stac_cli.dart';
+
 import '../../services/project_service.dart';
-import '../../utils/console_logger.dart';
 import '../base_command.dart';
 
 /// Command for listing all cloud projects

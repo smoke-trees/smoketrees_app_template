@@ -9,15 +9,13 @@ Future<bool?> showPageLoader(
     context: context,
     barrierDismissible: barrierDismissible,
     useRootNavigator: false,
-    builder: (_) => PageLoader(
-      barrierDismissible: barrierDismissible,
-    ),
+    builder: (_) => PageLoader(barrierDismissible: barrierDismissible),
   );
 }
 
 class PageLoader extends StatelessWidget {
   const PageLoader({Key? key, required this.barrierDismissible})
-      : super(key: key);
+    : super(key: key);
 
   final bool barrierDismissible;
 
@@ -32,13 +30,14 @@ class PageLoader extends StatelessWidget {
       },
       child: const SafeArea(
         child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: 30.0),
-                child: CircularProgressIndicator(),
-              ),
-            )),
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 30.0),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
       ),
     );
   }

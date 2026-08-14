@@ -1,19 +1,15 @@
-import 'dart:convert';
 import 'dart:io' hide ContentType;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:smoketrees_app_template/shared/animations/fade_in_animation.dart';
 // import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../core/models/user.dart';
-import '../shared/animations/fade_in_animation.dart';
-import '../shared/pages/inapp_webview.dart';
 import 'console_logger.dart';
 
 class AppUtils {
@@ -68,27 +64,27 @@ class AppUtils {
       return '$day$suffix $month, $year';
     }
   }
-
-  Future<User?> extractUserDataFromJWT(String jwtToken) async {
-    try {
-      final parts = jwtToken.split('.');
-      if (parts.length != 3) {
-        return null;
-      }
-      final payload = parts[1];
-      // Add padding characters if needed
-      final int padLength = (4 - payload.length % 4) % 4;
-      final paddedPayload = payload + '=' * padLength;
-      final decoded = base64Url.decode(paddedPayload);
-      final jsonString = utf8.decode(decoded);
-      final userData = json.decode(jsonString);
-      return User.fromJson(userData);
-    } catch (e) {
-ConsoleLogger.error('Error decoding JWT token: $e');
-      e.toString();
-      return null;
-    }
-  }
+  // TODO: Uncomment when User model is ready
+  // Future<User?> extractUserDataFromJWT(String jwtToken) async {
+  //   try {
+  //     final parts = jwtToken.split('.');
+  //     if (parts.length != 3) {
+  //       return null;
+  //     }
+  //     final payload = parts[1];
+  //     // Add padding characters if needed
+  //     final int padLength = (4 - payload.length % 4) % 4;
+  //     final paddedPayload = payload + '=' * padLength;
+  //     final decoded = base64Url.decode(paddedPayload);
+  //     final jsonString = utf8.decode(decoded);
+  //     final userData = json.decode(jsonString);
+  //     return User.fromJson(userData);
+  //   } catch (e) {
+  //     ConsoleLogger.error('Error decoding JWT token: $e');
+  //     e.toString();
+  //     return null;
+  //   }
+  // }
 
   static bool isAndroidGestureNavigationEnabled(BuildContext context) {
     final value = MediaQuery.of(context).systemGestureInsets.bottom;
@@ -222,10 +218,6 @@ ConsoleLogger.error('Error decoding JWT token: $e');
 
   static String pdfUrl =
       "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-
-  static inAppWebView(String url) async {
-    return Get.toNamed(InAppWebView.routeName, arguments: [url]);
-  }
 
   static share(String text) async {
     final params = ShareParams(uri: Uri.parse(text));

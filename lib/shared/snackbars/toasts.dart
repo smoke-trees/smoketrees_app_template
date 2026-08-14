@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import '../../theme/colors.dart';
+import 'package:smoketrees_app_template/theme/colors.dart';
 
 class AppToasts {
-  static showToast(
-      {required String message,
-      bool isError = false,
-      Color backgroundColor = AppColors.iconTextColor}) {
+  static showToast({
+    required String message,
+    bool isError = false,
+    Color backgroundColor = AppColors.iconTextColor,
+  }) {
     Fluttertoast.showToast(
       msg: message,
       toastLength: Toast.LENGTH_SHORT,

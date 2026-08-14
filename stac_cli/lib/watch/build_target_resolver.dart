@@ -43,12 +43,16 @@ class BuildTargetResolver {
   BuildTargetResolver({
     required this.stacEntryDir, // e.g. "$projectRoot/stac" — where screen/theme entry files live
     required this.libDir, // e.g. "$projectRoot/lib" — where imported models/widgets live
+    this.dependencyDirs = const [],
     required this.isEntryFile,
     required this.buildTargetFor,
   });
 
   final String stacEntryDir;
   final String libDir;
+  final List<String> dependencyDirs;
+
+  List<String> get watchDirs => [stacEntryDir, libDir, ...dependencyDirs];
 
   /// Return true if this file (already read as [content]) is a
   /// screen or theme entry point (e.g. carries your annotation/marker).
@@ -158,7 +162,7 @@ class BuildTargetResolver {
   }
 
   Future<List<String>> _listDartFiles(String projectRoot) async {
-    final dirs = [Directory(stacEntryDir), Directory(libDir)];
+    final dirs = watchDirs.map(Directory.new);
     final result = <String>[];
     for (final dir in dirs) {
       if (!await dir.exists()) continue;

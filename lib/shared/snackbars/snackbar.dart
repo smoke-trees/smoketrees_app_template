@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../utils/utils.dart';
+import 'package:smoketrees_app_template/theme/colors.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../theme/colors.dart';
+import '../../utils/utils.dart';
 
 class AppSnackBars {
-  static customSnackBar({
+  static void customSnackBar({
     required BuildContext context,
     required String message,
     bool isError = false,
@@ -22,7 +22,7 @@ class AppSnackBars {
     );
   }
 
-  static customSnackBar2({
+  static void customSnackBar2({
     required BuildContext context,
     String message = "Something went wrong Try again",
     bool isError = false,
