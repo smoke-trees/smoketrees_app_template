@@ -74,10 +74,30 @@ dependencies:
   json_class: ^3.0.1
   stac:
     git:
-      url: https://github.com/RJ2607/mod_stac.git
+      url: https://github.com/smoke-trees/st_sdui.git
       ref: main
+      path: packages/stac
   # stac_core: ^1.5.0
   json_annotation: ^4.9.0
+
+dependency_overrides:
+  stac_core:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac_core
+
+  stac_framework:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac_framework
+
+  stac_logger:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac_logger
 
 dev_dependencies:
   flutter_test:

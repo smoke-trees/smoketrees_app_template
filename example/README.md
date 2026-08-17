@@ -38,7 +38,7 @@ fvm flutter run -t example/lib/main.dart
 Run the local Stac development loop from the repository root:
 
 ```sh
-fvm dart run stac_cli/bin/stac_watch.dart
+stac watch
 ```
 
 When adding code, use this ownership rule:

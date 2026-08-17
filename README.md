@@ -6,8 +6,24 @@ This README walks a new developer from a fresh clone to a running app with local
 
 ---
 
+## Use cases
+
+This template is built for teams that move UI decisions to the backend. Everything below ships with a `stac build && stac deploy` — no app store submission:
+
+- **Content-heavy apps** — news, e-commerce, and marketplace apps where layouts, product pages, and landing screens change frequently. Edit the screen DSL under `stac/example/` and deploy.
+- **Marketing & promotions** — swap banners, feature cards, and offers on the fly, and run timed campaigns from the server. The [`wildcard_page`](#wildcard-pages-one-route-many-screens) route exists exactly for this: a sale or campaign page can be live this week and gone next week with no app update.
+- **Personalization** — render different layouts per user segment, region, or device from a single codebase. Screens ship as JSON, so the backend picks which variant to serve per request.
+- **A/B testing** — experiment with variants of a screen or theme and measure engagement without shipping new builds. The watch loop's hot-reload and theme hot-restart make iterating on variants fast.
+- **Operational dashboards & admin tools** — update forms, tables, and workflows as business logic evolves, without re-submitting to the app store.
+- **Onboarding & feature flags** — roll out new screens gradually, or tailor onboarding flows per market. Routing is data-driven: `splash_page` decides between `sign_in` and `bottom_navigation` at runtime.
+- **White-labeling** — reuse one Flutter binary across brands by driving logos, colors, and themes from the server. `main_theme` (`@StacThemeRef`) can be swapped server-side; editing it just costs a hot restart in the dev loop.
+- **Rapid prototyping** — validate UI ideas in a running app by changing Dart source and hot-reloading via the dev server. See [Daily loop: the watch session](#daily-loop-the-watch-session).
+
+---
+
 ## Table of contents
 
+- [Use cases](#use-cases)
 - [Prerequisites](#prerequisites)
 - [First-time setup (clone → run)](#first-time-setup-clone--run)
 - [Daily loop: the watch session](#daily-loop-the-watch-session)
@@ -55,15 +71,15 @@ dependencies:
 
 > It tracks `main` unpinned. Running `flutter pub get` months from now may resolve a different Stac version.
 
-### 2. Get the CLI's dependencies
+### 2. Install the `stac` CLI (one time)
 
-**Required.** `stac_cli/` is its own Dart package and is *not* a dependency of the root project, so step 1 does not resolve it:
+**Required.** The CLI is a globally activated package pulled from the `st_sdui` monorepo — it is *not* a dependency of the root project, so step 1 does not resolve it:
 
 ```sh
-dart pub get --directory stac_cli
+dart pub global activate --source git --git-path packages/stac_cli --git-ref main https://github.com/smoke-trees/st_sdui.git
 ```
 
-Skip this and `dart run stac_cli/bin/stac_watch.dart` fails to resolve its imports.
+Verify the install with `stac --version`. If `stac` is not found on your `PATH`, add Dart's global executables directory: `%LOCALAPPDATA%\Pub\Cache\bin` on Windows, `$HOME/.pub-cache/bin` on macOS/Linux.
 
 ### 3. Point the app at your backend (one time)
 
@@ -88,14 +104,14 @@ The first screen is `splash_page`, which auto-routes after ~5s to `sign_in` (no 
 ### 5. Start the watch session
 
 ```sh
-fvm dart run stac_cli/bin/stac_watch.dart
+stac watch
 ```
 
 That's the whole setup. Local dev routing is **on by default** — no flag needed.
 
 ## Daily loop: the watch session
 
-`stac_watch` is a **second entrypoint** inside `stac_cli/`. It is *not* a `stac watch` subcommand of the compiled `stac` CLI; run it with `dart run` (or `fvm dart run`).
+`stac watch` is a subcommand of the globally installed `stac` CLI, alongside `build` and `deploy`. Run it with `stac watch` (or `fvm dart ... stac` if you need the FVM-pinned Dart on `PATH`).
 
 ### What it does
 
@@ -137,10 +153,10 @@ Stop with **`q`** or **Ctrl+C** — both restore the terminal, cancel the watche
 
 ```sh
 # Standard local loop
-fvm dart run stac_cli/bin/stac_watch.dart
+stac watch
 
 # Watch only, no app — you run the app yourself (e.g. from an IDE)
-fvm dart run stac_cli/bin/stac_watch.dart --no-app
+stac watch --no-app
 # then, from another terminal:
 fvm flutter run --dart-define=STAC_LOCAL_DEV=true \
   --dart-define=STAC_DEV_HOST=localhost --dart-define=STAC_DEV_PORT=8090
@@ -202,24 +218,17 @@ With `--no-app` there's no app to talk to, so `r`/`R` print an advisory instead 
 
 ## One-off build & deploy
 
-### 1. Compile the CLI (one time)
+### 1. Point the CLI at your backend (one time)
 
-The CLI is a compiled native binary with your backend URL baked in. `build_stac.dart` is the **single cross-platform build script** — it picks the output name for your OS automatically (`stac.exe` on Windows, `stac` on macOS/Linux). Run it with the same `dart`/`fvm` on any platform:
-
-```sh
-dart run build_stac.dart "http://192.168.1.17:8080/api"
-```
-
-or by hand:
+The CLI is installed globally via `dart pub global activate` (see [First-time setup](#first-time-setup-clone--run)). `stac deploy` reads your backend URL from `STAC_BASE_API_URL` — set it in your shell, or in the CLI's `.env` file:
 
 ```sh
-# Windows
-dart compile exe stac_cli\bin\stac_cli.dart -D STAC_BASE_API_URL="https://your-backend.com/api" -o stac.exe
 # macOS / Linux
-dart compile exe stac_cli/bin/stac_cli.dart -D STAC_BASE_API_URL="https://your-backend.com/api" -o stac
-```
+export STAC_BASE_API_URL="https://your-backend.com/api"
 
-The URL is baked in at compile time. On macOS/Linux the binary is named `stac`; on Windows `stac.exe`.
+# PowerShell (Windows)
+$env:STAC_BASE_API_URL = "https://your-backend.com/api"
+```
 
 ### 2. Build the screens to JSON
 
@@ -238,6 +247,10 @@ stac deploy
 POSTs every file in `stac/.build` to `${STAC_BASE_API_URL}/app-screens/deploy` and `/app-themes/deploy`. `--skip-build` deploys what's already there without rebuilding.
 
 Deploy never touches `stac/.dev-build` — the dev loop and the deploy pipeline write to separate directories on purpose, so a watch-mode save can't be published by accident.
+
+### Same commands on iOS and Android
+
+All of the above — `stac watch`, `stac build`, `stac deploy` — are platform-agnostic. The CLI produces the same JSON and talks to the same backend regardless of which platform the app runs on, so **there is no separate command set for iOS vs Android**. The only platform-dependent bit is which device you point the watch loop at via `--device` (a simulator/emulator ID from `flutter devices`), and even then the command is identical.
 
 ## Project anatomy
 
@@ -267,14 +280,8 @@ smoketrees_app_template/
 │       ├── app/                # routes, navigation, bindings, options
 │       ├── stac_runtime/       # example Stac models, parsers, and actions
 │       └── features/           # counter and to-do examples
-├── stac_cli/                   # the CLI + watch tool (separate Dart package)
-│   ├── bin/stac_cli.dart       #   stac build/deploy/init/… entrypoint
-│   ├── bin/stac_watch.dart     #   watch-loop entrypoint (dart run)
-│   └── lib/watch/              #   server, watcher, process controller,
-│                               #   key_commands, manifest
 ├── .stac/manifest.json         # build ledger (version/hash per screen/theme)
 ├── .fvmrc                      # Flutter 3.44.0
-├── build_stac.dart             # single cross-platform CLI build script
 ├── create_stac_parser.sh       # scaffold a custom Stac widget parser
 ├── create_stac_action.sh       # scaffold a custom Stac action parser
 └── pubspec.yaml
@@ -502,25 +509,25 @@ return 'http://$host:$port';                              // local dev server
 
 So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DEV=true`. The watch session passes that define (plus host and port) automatically; a plain `flutter run` doesn't, and stays on `backendUrl`. `main.dart` reads the same flag to switch Stac's cache to `networkOnly` during dev.
 
-`STAC_BASE_API_URL` is unrelated to the app — it's the CLI's compile-time define, baked into the `stac`/`stac.exe` binary, used by `stac deploy`.
+`STAC_BASE_API_URL` is unrelated to the app — it's the CLI's runtime config, read from the environment or the CLI's `.env` file, and used only by `stac deploy`.
 
 ## CLI reference
 
-`stac` (Windows: `stac.exe`) — the compiled CLI — is the full CLI; `dart run stac_cli/bin/stac_watch.dart` is the watch tool.
+`stac` is a single globally installed CLI (`dart pub global activate`, see [First-time setup](#first-time-setup-clone--run)). Every command below is a subcommand of it, and they behave identically whether the app you're building targets iOS or Android.
 
 | Command | Purpose |
 |---------|---------|
 | `stac init` | Scaffold a Stac project (`stac/` sample, `default_stac_options.dart`, optional skills install). |
 | `stac build` | Compile `stac/` → `stac/.build/` JSON. |
 | `stac deploy` | Push `stac/.build/` to `${STAC_BASE_API_URL}/app-screens\|themes/deploy`. |
-| `stac login` / `logout` / `status` | Cloud auth — currently no-ops; the auth check in `base_command.dart` is commented out. |
+| `stac watch` | Local hot-reload loop (see [Daily loop](#daily-loop-the-watch-session)). |
+| `stac login` / `logout` / `status` | Cloud auth. |
 | `stac project create --name <n>` / `project list` | Cloud project management. |
 | `stac skills add` | Install a skill. |
 | `stac upgrade` | Self-update the CLI (`--version`, `--force`). |
 | `stac --version` / `--help` | Version / usage. |
-| `dart run stac_cli/bin/stac_watch.dart` | Local hot-reload loop (see above). |
 
-Other flags worth knowing: `build --project <dir>`, `deploy --skip-build`, `project create --description <d>`, global `-v/--verbose`.
+Other flags worth knowing: `build --project <dir>`, `deploy --skip-build`, `watch --port/--host/--device/--no-app/--no-dev`, `project create --description <d>`, global `-v/--verbose`.
 
 ## Gotchas & sharp edges
 

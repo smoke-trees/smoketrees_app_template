@@ -24,7 +24,7 @@ import 'utils/urls.dart';
 /// dart run stac_cli/bin/stac_watch.dart
 
 /// stac cli command (Windows -> stac.exe, macOS/Linux -> stac):
-/// fvm dart run build_stac.dart "https://your-backend.com/api"
+/// fvm dart pub global activate --source git --git-path packages/stac_cli --git-ref main https://github.com/smoke-trees/st_sdui.git
 
 ///App Build command
 /// fvm flutter build appbundle  --release --obfuscate --split-debug-info=C:\\Av\Work\fomo_app\debug-info
