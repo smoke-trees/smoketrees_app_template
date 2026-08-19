@@ -1,16 +1,82 @@
 # smoketrees_app_template
 
-A **Stac** (Server-Driven UI) Flutter template. Reusable common widgets live in `lib/shared/`; the runnable application lives in `example/lib/`; and screen layouts live as Dart DSL files under `stac/example/`.
+A **Stac** (Server-Driven UI) Flutter template. Reusable common widgets live in `lib/shared/`; the reference application and server-driven screen DSL are kept separate from the reusable package layer.
 
-This README walks a new developer from a fresh clone to a running app with local hot-reload, and explains how the pieces fit together.
+This README is written as a **navigation guide**: if you're new to this repo, read it top to bottom once, then use the [map](#map-where-do-i-go-for-x) as a lookup whenever you're not sure which folder or file a change belongs in. The goal is that by the end, you can take this template and ship your own SDUI application without guessing.
+
+---
+
+## Table of contents
+
+- [Start here: how to read this repo](#start-here-how-to-read-this-repo)
+- [Map: where do I go for X?](#map-where-do-i-go-for-x)
+- [Use cases](#use-cases)
+- [What this template provides](#what-this-template-provides)
+- [Your path from template to shipped app](#your-path-from-template-to-shipped-app)
+- [Prerequisites](#prerequisites)
+- [First-time setup (clone → run)](#first-time-setup-clone--run)
+- [Daily loop: the watch session](#daily-loop-the-watch-session)
+- [Key commands: `r`, `R`, `q`](#key-commands-r-r-q)
+- [Build screen/theme JSON](#build-screentheme-json)
+- [Project anatomy](#project-anatomy)
+- [Screens in this template](#screens-in-this-template)
+- [Building your first screen, step by step](#building-your-first-screen-step-by-step)
+- [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)
+- [Custom Stac actions](#custom-stac-actions)
+- [Wildcard pages: one route, many screens](#wildcard-pages-one-route-many-screens)
+- [Runtime routing: `AppUrls` and `STAC_LOCAL_DEV`](#runtime-routing-appurls-and-stac_local_dev)
+- [CLI reference](#cli-reference)
+- [Gotchas & sharp edges](#gotchas--sharp-edges)
+
+---
+
+## Start here: how to read this repo
+
+This template has **two layers**, and almost every question you'll have while building an app comes down to "which layer does my change belong in?"
+
+1. **The package layer — `lib/`.** Reusable runtime: Stac parsers, Stac actions, shared Flutter widgets, networking, storage, auth patterns. Treat this as infrastructure. You'll add to it (new parsers, new actions, new shared widgets) far more often than you'll rewrite it.
+2. **The reference app layer.** A runnable, working example built on top of `lib/` — backend controllers, feature-specific screens (`sign_in`, `bottom_navigation`, a to-do feature), route configuration, and the registry wiring it all together. This is **scaffolding to replace**, not code to keep. It exists so you have a working app to run on day one and a pattern to copy for every feature you build.
+
+The practical rule while you work:
+
+- Building a genuinely reusable, app-agnostic primitive (a new button style, a new Stac widget type, a new action type)? → **`lib/`**.
+- Building a feature specific to *your* product (your onboarding flow, your checkout screen, your settings page)? → **the reference app layer**, using the same file layout (`DSL entry` + `feature module` + `registry entries`) as the sample screens.
+
+Everything below expands on this split. If you only read one section, read this one — it's the lens for every other decision in the repo.
+
+---
+
+## Map: where do I go for X?
+
+A quick-reference table for common tasks. Each row links to a fuller section further down.
+
+| I want to… | Go to | Section |
+|---|---|---|
+| Run the app for the first time | Set `backendUrl`, then `fvm flutter run` | [First-time setup](#first-time-setup-clone--run) |
+| Start my daily dev loop | `stac watch` | [Daily loop](#daily-loop-the-watch-session) |
+| Edit an existing screen's layout | Its DSL entry file (e.g. `st_splash_page.dart`) | [Editing a screen](#daily-loop-the-watch-session) |
+| Add a brand-new screen | New DSL file with `@StacScreen`, then register its route | [Building your first screen](#building-your-first-screen-step-by-step) |
+| Change the app's theme/colors | The `@StacThemeRef` DSL file (e.g. `st_theme.dart`) — costs a hot **restart**, not reload | [Editing a screen](#daily-loop-the-watch-session), [Gotchas](#gotchas--sharp-edges) |
+| Add a time-boxed page (sale banner, campaign, one-off announcement) **without a new app release** | Add it to `WildcardPageModel.children` | [Wildcard pages](#wildcard-pages-one-off-many-screens) |
+| Build a new reusable widget (server-driven) | `dart run create_stac_parser.dart <Name> [category]` | [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser) |
+| Build a new reusable Flutter widget (not server-driven) | Add it under `lib/shared/` directly | [What this template provides](#what-this-template-provides) |
+| Add new tap/navigation behavior triggerable from JSON | `dart run create_stac_action.dart <Name> [category]` | [Custom Stac actions](#custom-stac-actions) |
+| Point the app at my backend | Reference app's URL configuration (`AppUrls.backendUrl`) | [Point the app at your backend](#first-time-setup-clone--run) |
+| Understand why screen JSON and data come from different URLs | `AppUrls.backendUrl` vs `AppUrls.stacBaseUrl` | [Runtime routing](#runtime-routing-appurls-and-stac_local_dev) |
+| Regenerate `.g.dart` files after changing a model | `fvm dart run build_runner build --delete-conflicting-outputs` | [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser) |
+| See what a finished parser/action looks like | `lib/stac_runtime/widgets/controls/main_button/`, `lib/stac_runtime/actions/wildcard_page_nav/` | [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser) |
+| Debug a blank screen or `CustomErrorCard` | Check the parser is registered in the Stac registry, and (for wildcard pages) that the child key matches | [Gotchas](#gotchas--sharp-edges), [Wildcard pages gotchas](#gotchas) |
+| Rebuild JSON without deploying | `stac build` | [Build screen/theme JSON](#build-screentheme-json) |
+| Deploy screen/theme JSON to a backend | Not yet configured in this template — see [TODO](#todo) | — |
 
 ---
 
 ## Use cases
 
-This template is built for teams that move UI decisions to the backend. Everything below ships with a `stac build && stac deploy` — no app store submission:
+This template is built for teams that move UI decisions to the backend. The local development workflow is ready today; backend deployment is tracked in [TODO](#todo):
 
-- **Content-heavy apps** — news, e-commerce, and marketplace apps where layouts, product pages, and landing screens change frequently. Edit the screen DSL under `stac/example/` and deploy.
+- **Content-heavy apps** — news, e-commerce, and marketplace apps where layouts, product pages, and landing screens change frequently. Edit the screen DSL and preview it with `stac watch`.
+- **Wildcard page delivery** — add a new named page to an already registered wildcard route and change the page shown by the server without adding a native route or releasing a new app version.
 - **Marketing & promotions** — swap banners, feature cards, and offers on the fly, and run timed campaigns from the server. The [`wildcard_page`](#wildcard-pages-one-route-many-screens) route exists exactly for this: a sale or campaign page can be live this week and gone next week with no app update.
 - **Personalization** — render different layouts per user segment, region, or device from a single codebase. Screens ship as JSON, so the backend picks which variant to serve per request.
 - **A/B testing** — experiment with variants of a screen or theme and measure engagement without shipping new builds. The watch loop's hot-reload and theme hot-restart make iterating on variants fast.
@@ -21,22 +87,80 @@ This template is built for teams that move UI decisions to the backend. Everythi
 
 ---
 
-## Table of contents
+## What this template provides
 
-- [Use cases](#use-cases)
-- [Prerequisites](#prerequisites)
-- [First-time setup (clone → run)](#first-time-setup-clone--run)
-- [Daily loop: the watch session](#daily-loop-the-watch-session)
-- [Key commands: `r`, `R`, `q`](#key-commands-r-r-q)
-- [One-off build & deploy](#one-off-build--deploy)
-- [Project anatomy](#project-anatomy)
-- [Screens in this template](#screens-in-this-template)
-- [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)
-- [Custom Stac actions](#custom-stac-actions)
-- [Wildcard pages: one route, many screens](#wildcard-pages-one-route-many-screens)
-- [Runtime routing: `AppUrls` and `STAC_LOCAL_DEV`](#runtime-routing-appurls-and-stac_local_dev)
-- [CLI reference](#cli-reference)
-- [Gotchas & sharp edges](#gotchas--sharp-edges)
+The template is more than a blank Flutter project. The following pieces are ready to keep, replace, or use as references:
+
+| Area | Included capability | Where to look |
+|------|---------------------|---------------|
+| Server-driven UI | Stac JSON screens and themes generated from annotated Dart DSL | `stac/` |
+| Local development | File watcher, local Stac server, Flutter hot reload, and theme hot restart | `stac watch` |
+| Screen/theme generation | Compile annotated DSL files into JSON artifacts for local inspection and future backend integration | `stac build` |
+| Navigation | Named routes plus the `wildcard_page` route for adding server-driven sub-pages without a new app release | `lib/stac_runtime/widgets/layout/wildcard_page/` |
+| Wildcard pages | One registered route can host new named pages from the server without adding a native route or releasing a new app version | `lib/stac_runtime/widgets/layout/wildcard_page/`, `lib/stac_runtime/actions/wildcard_page_nav/` |
+| Stac widgets | Layout, collection, control, conditional, dialog, list, and data-driven widget parsers | `lib/stac_runtime/widgets/` |
+| Stac actions | Typed navigation and to-do actions dispatched from JSON or Dart | `lib/stac_runtime/actions/` |
+| Reusable Flutter UI | Buttons, dialogs, loaders, animations, image/video helpers, shimmer loading, and fields | `lib/shared/`, `lib/stac_runtime/widgets/controls/main_button/` |
+| Backend integration | Dio client/controller structure, auth, settings, to-do requests, and error logging | Reference app network/features modules |
+| Local persistence | Hive initialization and persisted user/session data | Reference app storage module |
+| Error handling | Flutter error page/card fallbacks and Stac rendering error widgets | Reference app error widgets and app entrypoint |
+| Code generation | JSON serialization for custom models and actions | `fvm dart run build_runner build --delete-conflicting-outputs` |
+| Cross-platform scaffolding | One Dart command for a custom parser and one for a custom action | `create_stac_parser.dart`, `create_stac_action.dart` |
+
+### Main feature: add pages without a new app release
+
+`wildcard_page` is a pre-registered Flutter route that can contain any number of named server-driven sub-pages. Because the native route already exists in the installed app, adding another child such as `summer_sale`, `terms_update`, or `campaign_page` does not require adding a new Flutter route or publishing a new app version.
+
+The flow is:
+
+1. Build the new page as a `StacWidget` helper.
+2. Add it to `WildcardPageModel.children` under a unique name.
+3. Open it with `StWildcardPageNavAction(wildcardPage: '<name>')`.
+4. Preview it locally with `stac watch` and generate its JSON with `stac build`.
+5. Publish the updated wildcard screen JSON through the backend once deployment is configured.
+
+Only the server-driven JSON changes. Users keep their installed app version because `wildcard_page`, `WildcardPageParser`, and `StWildcardPageNavActionParser` are already included in the application. See [Wildcard pages](#wildcard-pages-one-route-many-screens) for the complete implementation and limitations.
+
+The reference application is included to show how the reusable root `lib/` package layer is wired into a complete app. A normal application built from this template keeps the root runtime/shared code, then replaces the reference backend URLs, routes, screens, controllers, and branding with its own implementation.
+
+---
+
+## Your path from template to shipped app
+
+Use this as a checklist. It's the same material as "How to use this template" in earlier versions of this doc, ordered as a path rather than a list.
+
+**Phase 1 — Get it running as-is**
+
+1. Clone the repository and run `fvm use` so the project uses the Flutter version in `.fvmrc`.
+2. Run `fvm flutter pub get`.
+3. Install the Stac CLI once — see [First-time setup](#first-time-setup-clone--run).
+4. Point `AppUrls.backendUrl` at a real backend (yours, or a staging one) so the reference app has data to show.
+5. Run `fvm flutter run` and confirm you land on `splash_page` → `sign_in` or `bottom_navigation`.
+6. Start `stac watch` and confirm hot reload works by editing the reference `splash_page` DSL.
+
+At the end of Phase 1 you have a working app and a working dev loop — nothing here is yours yet, but you've proven the template works in your environment.
+
+**Phase 2 — Make it yours**
+
+1. Rename the package and app title where required by your release process.
+2. Replace the sample backend URL and adapt the reference app's Dio controllers to your API.
+3. Replace the sample auth, to-do, counter, and wildcard screens with your feature modules — same file layout (DSL entry, feature module, registry entries), different content.
+4. Add your server-driven screens to the reference app's DSL directory using `@StacScreen(screenName: '...')`.
+5. Add your theme with `@StacThemeRef(name: '...')` and update `StacAppTheme` in the app entrypoint.
+6. Register any new parsers and actions in the reference app's Stac registry — an export alone does **not** register a parser or action; the registry entry does.
+7. Use `stac watch` for local iteration, `stac build` when you need JSON artifacts without the running app.
+
+**Phase 3 — Extend the runtime as needed**
+
+Only touch `lib/` (the package layer) once the reference-app-level replacement in Phase 2 isn't enough — i.e., you need a widget type or action type that doesn't exist yet:
+
+1. New reusable Stac widget → [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser).
+2. New reusable Stac action → [Custom Stac actions](#custom-stac-actions).
+3. New reusable plain-Flutter widget (not server-driven) → add directly under `lib/shared/`.
+
+**Phase 4 — Ship**
+
+Screen/theme JSON currently only builds locally (`stac build` → `stac/.build/`). Backend deployment isn't wired up in this template yet — see [TODO](#todo) before you plan a release around server-pushed screens.
 
 ---
 
@@ -57,7 +181,7 @@ This template is built for teams that move UI decisions to the backend. Everythi
 flutter pub get
 ```
 
-Run the example entrypoint with `flutter run -t example/lib/main.dart`.
+Run the reference application's Flutter entrypoint.
 
 The `stac` package is pulled from **Git, not pub.dev** — `pubspec.yaml`:
 
@@ -83,7 +207,7 @@ Verify the install with `stac --version`. If `stac` is not found on your `PATH`,
 
 ### 3. Point the app at your backend (one time)
 
-Open `example/lib/utils/urls.dart` and set:
+Open the reference application's URL configuration and set:
 
 ```dart
 static String backendUrl = "http://192.168.1.17:8080"; // your real backend
@@ -111,7 +235,7 @@ That's the whole setup. Local dev routing is **on by default** — no flag neede
 
 ## Daily loop: the watch session
 
-`stac watch` is a subcommand of the globally installed `stac` CLI, alongside `build` and `deploy`. Run it with `stac watch` (or `fvm dart ... stac` if you need the FVM-pinned Dart on `PATH`).
+`stac watch` is a subcommand of the globally installed `stac` CLI, alongside `build`. Run it with `stac watch` (or `fvm dart ... stac` if you need the FVM-pinned Dart on `PATH`).
 
 ### What it does
 
@@ -164,7 +288,7 @@ fvm flutter run --dart-define=STAC_LOCAL_DEV=true \
 
 ### Editing a screen
 
-Open `stac/example/st_splash_page.dart`:
+Open the reference application's `st_splash_page.dart` DSL file:
 
 ```dart
 import 'package:stac/stac_core.dart';
@@ -181,7 +305,7 @@ Save → the watcher prints `✓ built screen "splash_page" (v<n>)` → the app 
 
 If your edit produces byte-identical JSON, you'll see no rebuild line and no reload. That's intentional — the manifest hash gate suppresses no-op reloads. Press `r` if you want to force one anyway.
 
-Editing `stac/example/st_theme.dart` (the `@StacThemeRef` entry) triggers a full hot restart instead.
+Editing the reference application's `st_theme.dart` (`@StacThemeRef`) triggers a full hot restart instead.
 
 ## Key commands: `r`, `R`, `q`
 
@@ -216,100 +340,81 @@ Raw mode is a global terminal setting, so the session captures the incoming mode
 
 With `--no-app` there's no app to talk to, so `r`/`R` print an advisory instead of reloading.
 
-## One-off build & deploy
+## Build screen/theme JSON
 
-### 1. Point the CLI at your backend (one time)
-
-The CLI is installed globally via `dart pub global activate` (see [First-time setup](#first-time-setup-clone--run)). `stac deploy` reads your backend URL from `STAC_BASE_API_URL` — set it in your shell, or in the CLI's `.env` file:
-
-```sh
-# macOS / Linux
-export STAC_BASE_API_URL="https://your-backend.com/api"
-
-# PowerShell (Windows)
-$env:STAC_BASE_API_URL = "https://your-backend.com/api"
-```
-
-### 2. Build the screens to JSON
+`stac build` is available for compiling the annotated DSL into JSON. It does not deploy anything in this template because the backend deployment flow is not configured yet. See [TODO](#todo).
 
 ```sh
 stac build
 ```
 
-Scans `stac/` for `@StacScreen` / `@StacThemeRef`, compiles each into JSON under **`stac/.build/`**, printing `✓ Generated screen: <name>.json` per artifact. `--validate` is accepted but is currently a no-op.
-
-### 3. Deploy to the backend
-
-```sh
-stac deploy
-```
-
-POSTs every file in `stac/.build` to `${STAC_BASE_API_URL}/app-screens/deploy` and `/app-themes/deploy`. `--skip-build` deploys what's already there without rebuilding.
-
-Deploy never touches `stac/.dev-build` — the dev loop and the deploy pipeline write to separate directories on purpose, so a watch-mode save can't be published by accident.
+Scans the project for `@StacScreen` and `@StacThemeRef`, then writes generated JSON under `stac/.build/`. `--validate` is accepted but is currently a no-op.
 
 ### Same commands on iOS and Android
 
-All of the above — `stac watch`, `stac build`, `stac deploy` — are platform-agnostic. The CLI produces the same JSON and talks to the same backend regardless of which platform the app runs on, so **there is no separate command set for iOS vs Android**. The only platform-dependent bit is which device you point the watch loop at via `--device` (a simulator/emulator ID from `flutter devices`), and even then the command is identical.
+All of the above — `stac watch` and `stac build` — are platform-agnostic. The CLI produces the same JSON regardless of which platform the app runs on, so **there is no separate command set for iOS vs Android**. The only platform-dependent bit is which device you point the watch loop at via `--device` (a simulator/emulator ID from `flutter devices`), and even then the command is identical.
 
 ## Project anatomy
 
 ```
 smoketrees_app_template/
-├── stac/                       # Stac DSL — screens & themes as Dart
-│   ├── example/
-│   │   ├── st_theme.dart       #   @StacThemeRef(name: 'main_theme')
-│   │   ├── st_splash_page.dart
-│   │   ├── hello_world.dart    #   helper, no annotation
-│   │   ├── auth/                #   sign_in, sign_up
-│   │   ├── bottom_navigation/
-│   │   ├── wildcard_page/       #   wildcard_page + pages/{page1,page2}
-│   │   └── test page/           #   note: directory name contains a space
-│   ├── .build/                  # stac build output (deploy pipeline)
-│   └── .dev-build/               # watch output (dev loop)
 ├── lib/
+│   ├── app/                     # pages routing and controller bindings
+│   ├── core/                    # networking, storage, auth, settings
+│   ├── enums/                   # define enums here
+│   ├── features/                # all main pages like auth, bottom_navigation, and etc
 │   ├── shared/                  # reusable common Flutter widgets
-│   ├── core/                     # support required by common widgets
-│   ├── features/auth/            # common-widget dependency closure
-│   ├── features/splash/          # common-widget dependency closure
+│   ├── stac_runtime/            # reusable Stac widgets, parsers, actions
 │   ├── theme/
-│   └── utils/
-├── example/
-│   └── lib/
-│       ├── main.dart           # Hive init → Stac.initialize → StacApp
-│       ├── app/                # routes, navigation, bindings, options
-│       ├── stac_runtime/       # example Stac models, parsers, and actions
-│       └── features/           # counter and to-do examples
-├── .stac/manifest.json         # build ledger (version/hash per screen/theme)
-├── .fvmrc                      # Flutter 3.44.0
-├── create_stac_parser.dart     # cross-platform Stac widget parser scaffold
-├── create_stac_action.dart     # cross-platform Stac action parser scaffold
+│   |── utils/
+├── stac/                        # root package Stac DSL/helpers
+|   ├── lib/                     # screen and theme DSL
+|   ├── .build/                  # generated JSON output
+|   └── .dev-build/              # watch-mode output
+├── .stac/manifest.json          # build ledger (version/hash per screen/theme)
+├── .fvmrc                       # Flutter 3.44.0
+├── create_stac_parser.dart      # cross-platform Stac widget parser scaffold
+├── create_stac_action.dart      # cross-platform Stac action parser scaffold
 └── pubspec.yaml
 ```
 
-> **Only delete the `example/` folder if you're not using any of its custom widgets.** It is not just a sample app — it contains dozens of reusable widgets under `example/lib/shared/` (buttons, cards, dialogs, fields, pages, players, chips, and app-wide widgets) plus the example Stac models, parsers, and actions under `example/lib/stac_runtime/` and `example/lib/features/`. These widgets can be copied or imported into the main `lib/` folder, and the runnable app, routes, and backend integration all live there. If your project still depends on any of them, removing it breaks the app, the watch loop, and the deploy pipeline.
+Read this tree with the [Start here](#start-here-how-to-read-this-repo) split in mind: `lib/stac_runtime/` and `lib/shared/` are the package layer; `lib/app/`, `lib/features/`, and `stac/lib/` are where the reference app (and, after Phase 2, your app) lives. `stac/.build/` and `stac/.dev-build/` are generated — never hand-edit either.
 
 ### Key flows
 
 - **Dart → JSON.** `stac build` and the watch loop each run an annotated function in a temp wrapper and `jsonEncode` the resulting `StacWidget`. The **annotation argument** (`screenName: "…"`), not the filename, becomes the screen name.
-- **JSON → UI.** `example/lib/main.dart` calls `Stac.initialize(baseUrl: AppUrls.stacBaseUrl, …)` with every parser from `example/lib/stac_runtime/stac_registry.dart`. `example/lib/app/app_pages.dart` maps `splash_page`, `bottom_navigation`, `sign_in`, `sign_up` to `Stac(routeName:)`.
-- **Custom widgets.** Reusable common Flutter widgets remain in `lib/shared/`. DSL primitives live in `lib/stac_runtime/widgets/`; each is a model + `.g.dart` + parser trio. Scaffold new ones with `create_stac_parser.dart` (see [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)). Screen-level widgets live under `example/lib/features/<name>/stac/`.
-- **Actions.** Two mechanisms coexist: proper `StacActionParser`s under `example/lib/stac_runtime/actions/` (`to_do/{delete,reorder,toggle}`, `wildcard_page_nav/`), and `action_registry.dart`, a string-keyed callback map (`hello_world`, `back_profile_test_page`, `go_to_tab_1`) used by `StMainButton` via `actionKey`.
+- **JSON → UI.** The app calls `Stac.initialize` with every parser and action parser, then maps registered route names to `Stac(routeName:)`.
+- **Custom widgets.** Reusable common Flutter widgets remain in `lib/shared/`. DSL primitives live in `lib/stac_runtime/widgets/`; each is a model + `.g.dart` + parser trio. Scaffold new ones with `create_stac_parser.dart` (see [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)).
+- **Actions.** Typed `StacActionParser`s handle behavior from JSON or Dart, while application-specific callback registries can support legacy string-keyed actions.
 - **Runtime data.** Controllers hit the backend via `backendDio` (`/to-do`, `/user/sign-in`, `/application-settings`, …) and publish changes through `StDataRefreshController`, so server-driven lists patch in place instead of refetching.
 
 ## Screens in this template
 
 | Screen | DSL entry file | Notes |
 |--------|----------------|-------|
-| `splash_page` | `stac/example/st_splash_page.dart` | Home route. Waits ~5s, then routes to `sign_in` or `bottom_navigation` depending on whether a user is in Hive. |
-| `sign_in` | `stac/example/auth/st_sign_in_page.dart` | Thin wrapper returning `SignInModel`; the real form is `example/lib/features/auth/sign_in/sign_in_page.dart` → `/user/sign-in`. |
-| `sign_up` | `stac/example/auth/st_sign_up_page.dart` | `/user/sign-up`; reads tokens from a nested `result.tokens`. |
-| `bottom_navigation` | `stac/example/bottom_navigation/st_bottom_navigation_bar.dart` | 5-tab shell (`StCustomBottomBar` + `StPageView`). Tab 2 is the DSL showcase: reorderable to-do list with swipe actions, animations, conditional styling. |
-| `wildcard_page` | `stac/example/wildcard_page/wildcard_page.dart` | One route hosting many sub-pages, selected at runtime by a `wildcardPage` argument. See [Wildcard pages](#wildcard-pages-one-route-many-screens). |
-| `profile_test_page` | `stac/example/test page/profile_test_page.dart` | Placeholder. |
-| `main_theme` (theme) | `stac/example/st_theme.dart` | App theme. Editing it forces a hot restart. |
+| `splash_page` | Reference screen DSL | Home route. Waits ~5s, then routes to `sign_in` or `bottom_navigation` depending on whether a user is in Hive. |
+| `sign_in` | Reference screen DSL | Authentication screen backed by the sample auth flow. |
+| `sign_up` | Reference screen DSL | Registration screen backed by the sample auth flow. |
+| `bottom_navigation` | Reference screen DSL | 5-tab shell (`StCustomBottomBar` + `StPageView`) with the to-do showcase. |
+| `wildcard_page` | Reference wildcard DSL | One registered route hosting many named sub-pages selected by a `wildcardPage` argument. |
+| `profile_test_page` | Reference screen DSL | Placeholder screen. |
+| `main_theme` (theme) | Reference theme DSL | App theme. Editing it forces a hot restart. |
 
-`stac/example/hello_world.dart`, `stac/example/bottom_navigation/st_to_do_list_view.dart`, and `stac/example/wildcard_page/pages/*.dart` carry no annotation — they're composition helpers inlined into their parent screen, so they produce no JSON of their own.
+Unannotated screen helpers and wildcard sub-page builders are inlined into their parent screen, so they produce no JSON artifacts of their own.
+
+Treat every row in this table as a **pattern to copy**, not code to keep long-term: `sign_in`/`sign_up` show the auth pattern, `bottom_navigation` shows the tabbed-shell pattern, `wildcard_page` shows the no-release-page pattern. When you build your own screen, find the closest match here and mirror its structure (DSL entry → feature module → registry entries) rather than starting from a blank file.
+
+## Building your first screen, step by step
+
+A worked example that ties the sections above together — adding one brand-new named screen (not a wildcard sub-page) to your app.
+
+1. **Decide the screen name.** This is the string you'll pass to `@StacScreen(screenName: '...')` and the key used in the route table — pick it once and keep it consistent.
+2. **Create the DSL entry file** in the reference app's DSL directory, following `st_splash_page.dart` as a model: import the models it needs, annotate a function with `@StacScreen(screenName: 'your_screen')`, and return a `StacWidget` tree built from existing parsers (layout, controls, etc. under `lib/stac_runtime/widgets/`).
+3. **Register the route.** Add `'your_screen': (p0) => Stac(routeName: 'your_screen')` to the app's route table (`app_pages.dart`-equivalent) — screen JSON ships over the air, but route names do not (see [Wildcard pages: why this exists](#wildcard-pages-one-route-many-screens) for the full explanation of that constraint).
+4. **Wire any new behavior.** If the screen needs a tap action that doesn't exist yet, scaffold it — see [Custom Stac actions](#custom-stac-actions) — instead of hand-rolling a one-off callback.
+5. **Preview it.** With `stac watch` running, save the DSL file and confirm you see `✓ built screen "your_screen" (v1)` in the terminal.
+6. **Navigate to it** from an existing screen using a `StacNavigateAction(routeName: 'your_screen', ...)` (or your custom action, if you built one) to confirm it renders end-to-end.
+7. **Decide if it should be a full route or a wildcard sub-page.** If this screen is a one-off, time-boxed, or campaign-style page, consider building it as a `wildcard_page` child instead of a new route — see [Wildcard pages](#wildcard-pages-one-route-many-screens) — so future variants of it never need a route table change or app release.
 
 ## Scaffolding a custom Stac parser
 
@@ -351,6 +456,109 @@ The script then:
 
 After scaffolding, implement the widget's fields in the model and the render logic in `parse`, then `flutter pub run build_runner build` again on any later model change.
 
+### Example: a custom button parser
+
+`lib/stac_runtime/widgets/controls/main_button/` is the best complete parser example in this template. It separates the concerns cleanly:
+
+- `main_button.dart` is the normal Flutter widget. It owns loading, disabled, colors, padding, and tap behavior.
+- `st_main_button.dart` is the server-safe `StacWidget` model. It uses `StacColor`, `StacTextStyle`, `StacEdgeInsets`, and `StacAction` instead of Flutter-only types.
+- `st_main_button_parser.dart` converts the Stac model into `MainButton`, resolves colors/styles, and calls `model.onPressed.parse(context)`.
+- `st_main_button.g.dart` is generated by `json_serializable` and should not be edited manually.
+- `StMainButtonParser()` is registered in `lib/stac_runtime/stac_registry.dart`; an application can provide its own callback resolver when registering the parser.
+
+To create a similar button under a new name, run the cross-platform skeleton command from the repository root:
+
+```sh
+dart run create_stac_parser.dart PrimaryButton controls
+```
+
+This creates:
+
+```text
+lib/stac_runtime/widgets/controls/primary_button/
+├── st_primary_button.dart
+├── st_primary_button_parser.dart
+└── st_primary_button.g.dart
+```
+
+The generator also adds exports and `PrimaryButtonParser()` to the root registry. It runs code generation automatically when `fvm` is available. The explicit command for generating the `.g.dart` file is:
+
+```sh
+fvm dart run build_runner build --delete-conflicting-outputs
+```
+
+Adapt the generated model to expose the fields your Flutter widget needs. For example, the generated `PrimaryButton` model can follow the existing `StMainButton` model:
+
+```dart
+@JsonSerializable(explicitToJson: true)
+class PrimaryButton extends StacWidget {
+  const PrimaryButton({
+    this.title,
+    this.onPressed,
+    this.color,
+    this.textColor,
+    this.disabled = false,
+  });
+
+  final String? title;
+  final StacAction? onPressed;
+  final StacColor? color;
+  final StacColor? textColor;
+  final bool disabled;
+
+  @override
+  String get type => 'st_primary_button';
+
+  factory PrimaryButton.fromJson(Map<String, dynamic> json) =>
+      _$PrimaryButtonFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$PrimaryButtonToJson(this);
+}
+```
+
+The parser maps the server model into an ordinary Flutter widget. This is the important part of a custom parser: the JSON model remains platform-neutral, while the parser is responsible for Flutter rendering and action dispatch.
+
+```dart
+class PrimaryButtonParser extends StacParser<PrimaryButton> {
+  @override
+  String get type => 'st_primary_button';
+
+  @override
+  PrimaryButton getModel(Map<String, dynamic> json) =>
+      PrimaryButton.fromJson(json);
+
+  @override
+  Widget parse(BuildContext context, PrimaryButton model) {
+    return MainButton(
+      title: model.title,
+      disabled: model.disabled,
+      color: model.color?.toColor(context),
+      textColor: model.textColor?.toColor(context),
+      onTap: () async {
+        await model.onPressed?.parse(context);
+      },
+    );
+  }
+}
+```
+
+The DSL can then use the new parser-backed widget exactly like the existing `StMainButton`:
+
+```dart
+PrimaryButton(
+  title: 'Continue',
+  color: StacColors.black,
+  textColor: StacColors.white,
+  onPressed: StacNavigateAction(
+    routeName: 'profile',
+    navigationStyle: NavigationStyle.push,
+  ),
+)
+```
+
+For a complete production implementation, copy the additional fields and style conversion from `st_main_button.dart` and `st_main_button_parser.dart`, then run the code-generation command after changing the model. Register the parser in the registry that `Stac.initialize` receives; an export alone does not register a parser.
+
 ### Custom Stac actions
 
 Actions follow the same model + `.g.dart` + parser pattern, but under `lib/stac_runtime/actions/`. The cross-platform `create_stac_action.dart` scaffolds the trio (`st_<snake>_action.dart`, `st_<snake>_action_parser.dart`, `st_<snake>_action.g.dart`), exports them from the barrel, and registers the parser in the `actionParsers` list:
@@ -365,11 +573,109 @@ dart run create_stac_action.dart SubmitOrder checkout # → lib/stac_runtime/act
 
 Mirroring `lib/stac_runtime/actions/wildcard_page_nav/`, the generated model extends `StacAction` (`actionType` getter), and the parser extends `StacActionParser<St<Name>Action>` with an `onCall` placeholder — dispatch through `Stac.onCallFromJson` (as `StWildcardPageNavActionParser` does) to keep behavior identical whether triggered from JSON or imperative code. Run `build_runner` after filling in the model.
 
+### Example: a custom action used by `StMainButton`
+
+The existing `StMainButton` accepts a typed `StacAction` through `onPressed`. That lets a screen describe a button and its behavior together in the DSL:
+
+```dart
+StMainButton(
+  title: 'Open profile',
+  onPressed: StOpenProfileAction(),
+)
+```
+
+Generate the action skeleton with one command:
+
+```sh
+dart run create_stac_action.dart OpenProfile navigation
+```
+
+The generated class is `StOpenProfileAction`, its JSON `actionType` is `open_profile`, and the files are created under:
+
+```text
+lib/stac_runtime/actions/navigation/open_profile/
+├── st_open_profile_action.dart
+├── st_open_profile_action_parser.dart
+└── st_open_profile_action.g.dart
+```
+
+The generator exports the model and parser and adds `StOpenProfileActionParser()` to the root action registry. Generate or regenerate the serialization file with:
+
+```sh
+fvm dart run build_runner build --delete-conflicting-outputs
+```
+
+Add the action's data to the generated model. Keep route names and other values typed or required where possible:
+
+```dart
+@JsonSerializable(explicitToJson: true)
+class StOpenProfileAction extends StacAction {
+  const StOpenProfileAction({required this.userId});
+
+  final String userId;
+
+  @override
+  String get actionType => 'open_profile';
+
+  factory StOpenProfileAction.fromJson(Map<String, dynamic> json) =>
+      _$StOpenProfileActionFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$StOpenProfileActionToJson(this);
+}
+```
+
+Implement the parser's `onCall` by creating a built-in Stac action and dispatching it through `Stac.onCallFromJson`, as the shipped `StWildcardPageNavActionParser` does:
+
+```dart
+class StOpenProfileActionParser
+    extends StacActionParser<StOpenProfileAction> {
+  const StOpenProfileActionParser();
+
+  @override
+  String get actionType => 'open_profile';
+
+  @override
+  StOpenProfileAction getModel(Map<String, dynamic> json) =>
+      StOpenProfileAction.fromJson(json);
+
+  @override
+  Future<void> onCall(
+    BuildContext context,
+    StOpenProfileAction action,
+  ) async {
+    final navigate = StacNavigator.pushStac(
+      'profile',
+      arguments: {'userId': action.userId},
+    );
+    await Stac.onCallFromJson(navigate.toJson(), context);
+  }
+}
+```
+
+The action must be present in the registry passed to `Stac.initialize`. Add the import and parser to the application's action registry:
+
+```dart
+static final List<StacActionParser> actionParsers = [
+  StWildcardPageNavActionParser(),
+  StOpenProfileActionParser(),
+];
+```
+
+After code generation, the final flow is:
+
+1. A Stac screen creates `StMainButton(onPressed: StOpenProfileAction(...))`.
+2. `stac build` serializes the typed action into JSON.
+3. The runtime resolves `open_profile` through `StOpenProfileActionParser`.
+4. The parser dispatches navigation using the same Stac action pipeline used by built-in actions.
+
+This pattern also works for API calls, form submissions, dialogs, analytics, and other behavior. Keep network and application services in the app layer, and let the action parser translate the server action into that service call.
+
 ## Wildcard pages: one route, many screens
 
 ### Why this exists
 
-Screen JSON ships over the air, but **route names do not**. Every reachable route has to exist in `example/lib/app/app_pages.dart`:
+Screen JSON ships over the air, but **route names do not**. Every reachable route has to exist in the application's route table:
 
 ```dart
 static final Map<String, Widget Function(BuildContext)> stacPages = {
@@ -385,7 +691,7 @@ So a brand-new screen name means editing app code, which means a rebuild and a s
 - **Special events** — a sale banner, a campaign landing page, a one-off announcement that has to be live this week and gone next week.
 - **Any page you don't want to spend an app update on** — a T&C revision, a new help article, a page that only exists for one cohort.
 
-`wildcard_page` is the pre-registered route that absorbs all of these. It is one route in `app_pages.dart` that hosts an arbitrary number of sub-pages, so shipping a new page becomes a `stac deploy` instead of a release.
+`wildcard_page` is the pre-registered route that absorbs all of these. It is one route in `app_pages.dart` that hosts an arbitrary number of named sub-pages. Once the app version contains this route, the server can select and serve a new wildcard page without adding a native route or releasing a new app version.
 
 ### How it works
 
@@ -404,13 +710,13 @@ return CustomErrorCard(error: 'No widgets added or argumentIndex is null');
 The DSL side stays flat — one file per sub-page, composed into the map:
 
 ```dart
-// stac/example/wildcard_page/wildcard_page.dart
+// <dsl-directory>/wildcard_page/wildcard_page.dart
 @StacScreen(screenName: "wildcard_page")
 StacWidget wildcardPage() =>
     WildcardPageModel(children: {'page1': page1(), 'page2': page2()});
 ```
 
-Adding `'summer_sale': summerSale()` to that map and deploying is the entire "new page" flow. No `app_pages.dart` edit, no release.
+Adding `'summer_sale': summerSale()` to that map and previewing it with `stac watch` is the local "new page" flow. No `app_pages.dart` edit is needed for the wildcard sub-page.
 
 ### Why there's a dedicated action
 
@@ -424,12 +730,12 @@ onPressed: StacNavigator.pushStac(
 )
 ```
 
-Three ways to break that with no compile error and no runtime exception — just the error card: misspell the `'wildcardPage'` key, forget `arguments` entirely, or use a navigation style whose `StacNavigator` helper doesn't accept `arguments` (`pushReplacementStac` and `pushAndRemoveAllStac` don't). The failure shows up as a blank/error page after deploy, which is the worst place to find it.
+Three ways to break that with no compile error and no runtime exception — just the error card: misspell the `'wildcardPage'` key, forget `arguments` entirely, or use a navigation style whose `StacNavigator` helper doesn't accept `arguments` (`pushReplacementStac` and `pushAndRemoveAllStac` don't). The failure shows up as a blank/error page at runtime, so test each wildcard destination with `stac watch`.
 
 `StWildcardPageNavAction` removes the choice. The key is written once inside the action, `wildcardPage` is a **required typed field**, and the navigation style is an **enum** instead of a hand-assembled `arguments` map:
 
 ```dart
-// stac/example/wildcard_page/pages/page1.dart
+// <dsl-directory>/wildcard_page/pages/page1.dart
 onPressed: StWildcardPageNavAction(
   navigationType: WildcardPageNavType.push,
   wildcardPage: 'page2',
@@ -453,21 +759,21 @@ The destination route is hardcoded to `'wildcard_page'` in the parser — delibe
 
 | File | Role |
 |------|------|
-| `example/lib/stac_runtime/widgets/layout/wildcard_page/wildcard_page.dart` | `WildcardPageModel` — `@JsonSerializable`, type `st_wildcard_page`, holds `Map<String, StacWidget> children`. |
-| `example/lib/stac_runtime/widgets/layout/wildcard_page/wildcard_page_parser.dart` | `WildcardPageParser` — picks the child from `arguments['wildcardPage']`. |
-| `example/lib/stac_runtime/actions/wildcard_page_nav/st_wildcard_page_nav.dart` | `StWildcardPageNavAction` + `WildcardPageNavType` — `@JsonSerializable`, actionType `wildcard_page_nav`. |
-| `example/lib/stac_runtime/actions/wildcard_page_nav/st_wildcard_page_nav_parser.dart` | `StWildcardPageNavActionParser` — maps the enum to a `StacNavigateAction` and dispatches. |
-| `stac/example/wildcard_page/wildcard_page.dart` | DSL entry, `@StacScreen(screenName: "wildcard_page")`. |
-| `stac/example/wildcard_page/pages/*.dart` | One unannotated builder per sub-page. |
+| `lib/stac_runtime/widgets/layout/wildcard_page/wildcard_page.dart` | `WildcardPageModel` — `@JsonSerializable`, type `st_wildcard_page`, holds `Map<String, StacWidget> children`. |
+| `lib/stac_runtime/widgets/layout/wildcard_page/wildcard_page_parser.dart` | `WildcardPageParser` — picks the child from `arguments['wildcardPage']`. |
+| `lib/stac_runtime/actions/wildcard_page_nav/st_wildcard_page_nav.dart` | `StWildcardPageNavAction` + `WildcardPageNavType` — `@JsonSerializable`, actionType `wildcard_page_nav`. |
+| `lib/stac_runtime/actions/wildcard_page_nav/st_wildcard_page_nav_parser.dart` | `StWildcardPageNavActionParser` — maps the enum to a `StacNavigateAction` and dispatches. |
+| `<dsl-directory>/wildcard_page/wildcard_page.dart` | DSL entry, `@StacScreen(screenName: "wildcard_page")`. |
+| `<dsl-directory>/wildcard_page/pages/*.dart` | One unannotated builder per sub-page. |
 
-Both parsers are registered in `example/lib/stac_runtime/stac_registry.dart` (`WildcardPageParser()` in `parsers`, `StWildcardPageNavActionParser()` in `actionParsers`).
+Both parsers must be registered in the application's Stac registry (`WildcardPageParser()` in `parsers`, `StWildcardPageNavActionParser()` in `actionParsers`).
 
 ### Adding a sub-page
 
-1. Create `stac/example/wildcard_page/pages/<name>.dart` returning a `StacWidget` (no annotation — it's a helper, not a screen).
+1. Create `<dsl-directory>/wildcard_page/pages/<name>.dart` returning a `StacWidget` (no annotation — it's a helper, not a screen).
 2. Add it to the map in `wildcard_page.dart`: `'<name>': <name>()`.
 3. Navigate to it with `StWildcardPageNavAction(wildcardPage: '<name>')`.
-4. `stac build && stac deploy` — or just save, if the watch session is running.
+4. `stac build` to generate JSON, or just save if the watch session is running.
 
 Only step 4 reaches production. Steps 1–3 are DSL, so nothing here needs an app release.
 
@@ -492,7 +798,7 @@ Only step 4 reaches production. Steps 1–3 are DSL, so nothing here needs an ap
 
 ## Runtime routing: `AppUrls` and `STAC_LOCAL_DEV`
 
-The app keeps **two** base URLs on purpose (`example/lib/utils/urls.dart`):
+The app keeps **two** base URLs on purpose in its URL configuration:
 
 - `AppUrls.backendUrl` — used by `backendDio` for all data (auth, to-dos, settings).
 - `AppUrls.stacBaseUrl` — used by `Stac.initialize` for screen and theme JSON only.
@@ -509,8 +815,6 @@ return 'http://$host:$port';                              // local dev server
 
 So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DEV=true`. The watch session passes that define (plus host and port) automatically; a plain `flutter run` doesn't, and stays on `backendUrl`. `main.dart` reads the same flag to switch Stac's cache to `networkOnly` during dev.
 
-`STAC_BASE_API_URL` is unrelated to the app — it's the CLI's runtime config, read from the environment or the CLI's `.env` file, and used only by `stac deploy`.
-
 ## CLI reference
 
 `stac` is a single globally installed CLI (`dart pub global activate`, see [First-time setup](#first-time-setup-clone--run)). Every command below is a subcommand of it, and they behave identically whether the app you're building targets iOS or Android.
@@ -518,8 +822,7 @@ So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DE
 | Command | Purpose |
 |---------|---------|
 | `stac init` | Scaffold a Stac project (`stac/` sample, `default_stac_options.dart`, optional skills install). |
-| `stac build` | Compile `stac/` → `stac/.build/` JSON. |
-| `stac deploy` | Push `stac/.build/` to `${STAC_BASE_API_URL}/app-screens\|themes/deploy`. |
+| `stac build` | Compile annotated DSL files into `stac/.build/` JSON. |
 | `stac watch` | Local hot-reload loop (see [Daily loop](#daily-loop-the-watch-session)). |
 | `stac login` / `logout` / `status` | Cloud auth. |
 | `stac project create --name <n>` / `project list` | Cloud project management. |
@@ -527,7 +830,11 @@ So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DE
 | `stac upgrade` | Self-update the CLI (`--version`, `--force`). |
 | `stac --version` / `--help` | Version / usage. |
 
-Other flags worth knowing: `build --project <dir>`, `deploy --skip-build`, `watch --port/--host/--device/--no-app/--no-dev`, `project create --description <d>`, global `-v/--verbose`.
+Other flags worth knowing: `build --project <dir>`, `watch --port/--host/--device/--no-app/--no-dev`, `project create --description <d>`, global `-v/--verbose`.
+
+## TODO
+
+- **Configure backend deployment.** `stac build` currently generates screen/theme JSON locally, but this template does not yet configure `stac deploy` or a deployment API. Add the backend URL, authentication, deployment endpoints, and a documented release workflow before enabling deployment instructions.
 
 ## Gotchas & sharp edges
 
@@ -537,3 +844,4 @@ Other flags worth knowing: `build --project <dir>`, `deploy --skip-build`, `watc
 - **Port mismatch in the fallback.** The watch server defaults to `8090`, but `urls.dart`'s `STAC_DEV_PORT` fallback is `8070`. It only matters if the define goes missing — the watch session always passes the real port.
 - **Themes cost a hot restart**, so editing `st_theme.dart` is a slower cycle than editing a screen.
 - **The `stac` git dependency is unpinned** (`ref: main`). Pin a commit SHA if you need reproducible builds.
+- **An export alone never registers a parser or action.** Forgetting the registry entry (`parsers` / `actionParsers` list) is the single most common cause of an unrendered widget or a no-op action — check the registry before debugging the parser logic itself.
