@@ -37,8 +37,8 @@ shift
 # --- name transforms -------------------------------------------------------
 lowercase=$(echo "$Name" | tr '[:upper:]' '[:lower:]')
 # MyWidget -> my_widget ; HTTPWidget -> h_t_t_p_widget (kept simple, matches Material)
-snakecase=$(echo "$Name" | sed -r 's/([a-z0-9])([A-Z])/\1_\L\2/g' | tr '[:upper:]' '[:lower:]')
-kebabcase=$(echo "$Name" | sed -r 's/([a-z0-9])([A-Z])/\1-\L\2/g' | tr '[:upper:]' '[:lower:]')
+snakecase=$(echo "$Name" | sed -E 's/([a-z0-9])([A-Z])/\1_\2/g' | tr '[:upper:]' '[:lower:]')
+kebabcase=$(echo "$Name" | sed -E 's/([a-z0-9])([A-Z])/\1-\2/g' | tr '[:upper:]' '[:lower:]')
 
 # Widget type key sent over JSON, e.g. "st_my_widget"
 type="st_${snakecase}"
@@ -99,7 +99,7 @@ import 'package:stac/stac.dart';
 import 'st_${snakecase}.dart';
 
 /// Registers the "$type" type with Stac so JSON payloads can render
-/// [$Name]. Replace the placeholder `SizedBox` body with your widget and
+/// [$Name]. Replace the placeholder \`SizedBox\` body with your widget and
 /// any helper methods (e.g. enum mapping), then add fields to the model.
 ///
 /// Registered via the barrel export in
@@ -128,19 +128,9 @@ class ${Name}Parser extends StacParser<$Name> {
 }
 EOF
 
-# --- .g.dart placeholder (overwritten by build_runner) --------------------
-cat > "$DIR/st_${snakecase}.g.dart" <<EOF
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'st_${snakecase}.dart';
-
-// Run `fvm dart run build_runner build --delete-conflicting-outputs`
-// to generate this file from the model's @JsonSerializable annotations.
-EOF
-
 # --- export from the barrel: lib/smoketrees_app_template.dart -------------
 BARREL="lib/smoketrees_app_template.dart"
-sed -i "/stac_runtime\/widgets\/layout\/wildcard_page\/wildcard_page_parser.dart';/a\\
+sed -i '' "/stac_runtime\/widgets\/layout\/wildcard_page\/wildcard_page_parser.dart';/a\\
 export '$PKG_REL.dart';\\
 export '$PKG_REL\_parser.dart';" "$BARREL"
 
@@ -148,7 +138,7 @@ export '$PKG_REL\_parser.dart';" "$BARREL"
 REG="lib/stac_runtime/stac_registry.dart"
 
 # add the parser instance before the closing "];" of the parsers list
-sed -i "/^    WildcardPageParser(),/a\\
+sed -i '' "/^    WildcardPageParser(),/a\\
     ${Name}Parser()," "$REG"
 
 echo "Created custom Stac parser '$Name'"
@@ -160,8 +150,20 @@ echo "Registered ${Name}Parser() in $REG"
 
 # --- regenerate .g.dart ---------------------------------------------------
 if command -v fvm >/dev/null 2>&1; then
+  # Don't pre-write the .g.dart: an existing placeholder makes build_runner
+  # treat the output as up-to-date and skip generation.
+  rm -f "$DIR/st_${snakecase}.g.dart"
   fvm dart run build_runner build --delete-conflicting-outputs
 else
+  # Fallback placeholder so the file still exists for manual generation.
+  cat > "$DIR/st_${snakecase}.g.dart" <<EOF
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'st_${snakecase}.dart';
+
+// Run \`fvm dart run build_runner build --delete-conflicting-outputs\`
+// to generate this file from the model's @JsonSerializable annotations.
+EOF
   echo
   echo "fvm not found — run the generator manually:"
   echo "  fvm dart run build_runner build --delete-conflicting-outputs"
