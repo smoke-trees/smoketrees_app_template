@@ -26,6 +26,10 @@
 
 set -euo pipefail
 
+# Run from this script's directory so relative lib/ paths resolve no matter
+# where the script is invoked from (any terminal, any shell).
+cd "$(dirname "$0")"
+
 # Portable in-place sed: BSD sed (macOS) needs an empty arg after -i,
 # GNU sed (Linux / Git Bash on Windows) does not.
 if sed --version >/dev/null 2>&1; then
