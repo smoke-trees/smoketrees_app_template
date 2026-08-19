@@ -14,6 +14,7 @@ This README is written as a **navigation guide**: if you're new to this repo, re
 - [What this template provides](#what-this-template-provides)
 - [Your path from template to shipped app](#your-path-from-template-to-shipped-app)
 - [Prerequisites](#prerequisites)
+- [Stac package sources](#stac-package-sources)
 - [First-time setup (clone → run)](#first-time-setup-clone--run)
 - [Daily loop: the watch session](#daily-loop-the-watch-session)
 - [Key commands: `r`, `R`, `q`](#key-commands-r-r-q)
@@ -172,6 +173,55 @@ Screen/theme JSON currently only builds locally (`stac build` → `stac/.build/`
 | **Dart SDK** | Ships with Flutter; the CLI targets `^3.8.1`. |
 | **A backend** | The app talks to a real backend over HTTP for data (auth, to-dos, settings). There is no mock backend in this repo — only screen/theme JSON is served locally. |
 | **A device or emulator** | Needed for the watch session's auto-launch. `flutter devices` to list them. |
+
+## Stac package sources
+
+This template defines its Stac packages from the [`st_sdui`](https://github.com/smoke-trees/st_sdui) Git repository instead of relying on published package versions from pub.dev. The package source is configured in `pubspec.yaml`:
+
+```yaml
+dependencies:
+  stac:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac
+
+dependency_overrides:
+  stac_core:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac_core
+
+  stac_framework:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac_framework
+
+  stac_logger:
+    git:
+      url: https://github.com/smoke-trees/st_sdui.git
+      ref: main
+      path: packages/stac_logger
+```
+
+The entries have different roles:
+
+- `stac` is the package used directly by the application. Its `path` points to the `packages/stac` package inside the monorepo.
+- `stac_core` provides the core Stac models and serialization contracts used by widgets, screens, and actions. It is overridden so the app uses the matching Git revision.
+- `stac_framework` provides framework-level Stac integration and stays on the same repository revision.
+- `stac_logger` provides the Stac logging package and stays on the same repository revision.
+
+The `ref: main` entries intentionally track the current repository branch. This keeps the Stac packages coordinated, but a future change on `main` can change dependency resolution. For reproducible application builds, replace `main` with a tested commit SHA across all four entries.
+
+After changing a package source or revision, run:
+
+```sh
+fvm flutter pub get
+```
+
+The Stac CLI is sourced from the same monorepo, but it is installed separately as a global Dart executable. See [Install the Stac CLI](#2-install-the-stac-cli-one-time).
 
 ## First-time setup (clone → run)
 
