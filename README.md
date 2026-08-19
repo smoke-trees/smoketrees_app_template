@@ -282,8 +282,8 @@ smoketrees_app_template/
 │       └── features/           # counter and to-do examples
 ├── .stac/manifest.json         # build ledger (version/hash per screen/theme)
 ├── .fvmrc                      # Flutter 3.44.0
-├── create_stac_parser.sh       # scaffold a custom Stac widget parser
-├── create_stac_action.sh       # scaffold a custom Stac action parser
+├── create_stac_parser.dart     # cross-platform Stac widget parser scaffold
+├── create_stac_action.dart     # cross-platform Stac action parser scaffold
 └── pubspec.yaml
 ```
 
@@ -293,7 +293,7 @@ smoketrees_app_template/
 
 - **Dart → JSON.** `stac build` and the watch loop each run an annotated function in a temp wrapper and `jsonEncode` the resulting `StacWidget`. The **annotation argument** (`screenName: "…"`), not the filename, becomes the screen name.
 - **JSON → UI.** `example/lib/main.dart` calls `Stac.initialize(baseUrl: AppUrls.stacBaseUrl, …)` with every parser from `example/lib/stac_runtime/stac_registry.dart`. `example/lib/app/app_pages.dart` maps `splash_page`, `bottom_navigation`, `sign_in`, `sign_up` to `Stac(routeName:)`.
-- **Custom widgets.** Reusable common Flutter widgets remain in `lib/shared/`. DSL primitives live in `lib/stac_runtime/widgets/`; each is a model + `.g.dart` + parser trio. Scaffold new ones with `create_stac_parser.sh` (see [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)). Screen-level widgets live under `example/lib/features/<name>/stac/`.
+- **Custom widgets.** Reusable common Flutter widgets remain in `lib/shared/`. DSL primitives live in `lib/stac_runtime/widgets/`; each is a model + `.g.dart` + parser trio. Scaffold new ones with `create_stac_parser.dart` (see [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)). Screen-level widgets live under `example/lib/features/<name>/stac/`.
 - **Actions.** Two mechanisms coexist: proper `StacActionParser`s under `example/lib/stac_runtime/actions/` (`to_do/{delete,reorder,toggle}`, `wildcard_page_nav/`), and `action_registry.dart`, a string-keyed callback map (`hello_world`, `back_profile_test_page`, `go_to_tab_1`) used by `StMainButton` via `actionKey`.
 - **Runtime data.** Controllers hit the backend via `backendDio` (`/to-do`, `/user/sign-in`, `/application-settings`, …) and publish changes through `StDataRefreshController`, so server-driven lists patch in place instead of refetching.
 
@@ -313,12 +313,12 @@ smoketrees_app_template/
 
 ## Scaffolding a custom Stac parser
 
-Custom DSL primitives are a model + `.g.dart` + parser trio under `lib/stac_runtime/widgets/`. `create_stac_parser.sh` scaffolds all three files, exports them from `lib/smoketrees_app_template.dart`, wires the parser into `lib/stac_runtime/stac_registry.dart`, and regenerates the `.g.dart` — so adding a new server-driven widget is one command instead of five hand-written files.
+Custom DSL primitives are a model + `.g.dart` + parser trio under `lib/stac_runtime/widgets/`. The cross-platform `create_stac_parser.dart` scaffolds all three files, exports them from `lib/smoketrees_app_template.dart`, wires the parser into `lib/stac_runtime/stac_registry.dart`, and regenerates the `.g.dart`. It uses the project's Dart SDK and runs identically from macOS Terminal, CMD, PowerShell, Windows Terminal, and other shells.
 
 ### Usage
 
 ```sh
-./create_stac_parser.sh <Name> [category] [subdir...]
+dart run create_stac_parser.dart <Name> [category] [subdir...]
 ```
 
 | Argument | Meaning | Default |
@@ -330,9 +330,9 @@ Custom DSL primitives are a model + `.g.dart` + parser trio under `lib/stac_runt
 Examples:
 
 ```sh
-./create_stac_parser.sh MyCard            # → widgets/layout/my_card/
-./create_stac_parser.sh ImageTile layout  # → widgets/layout/image_tile/
-./create_stac_parser.sh ChatBubble inbox  # → widgets/inbox/chat_bubble/
+dart run create_stac_parser.dart MyCard            # → widgets/layout/my_card/
+dart run create_stac_parser.dart ImageTile layout  # → widgets/layout/image_tile/
+dart run create_stac_parser.dart ChatBubble inbox  # → widgets/inbox/chat_bubble/
 ```
 
 Mirroring the existing `material` widget (`lib/stac_runtime/widgets/layout/material/`), each scaffold creates:
@@ -353,14 +353,14 @@ After scaffolding, implement the widget's fields in the model and the render log
 
 ### Custom Stac actions
 
-Actions follow the same model + `.g.dart` + parser pattern, but under `lib/stac_runtime/actions/`. `create_stac_action.sh` scaffolds the trio (`st_<snake>_action.dart`, `st_<snake>_action_parser.dart`, `st_<snake>_action.g.dart`), exports them from the barrel, and registers the parser in the `actionParsers` list:
+Actions follow the same model + `.g.dart` + parser pattern, but under `lib/stac_runtime/actions/`. The cross-platform `create_stac_action.dart` scaffolds the trio (`st_<snake>_action.dart`, `st_<snake>_action_parser.dart`, `st_<snake>_action.g.dart`), exports them from the barrel, and registers the parser in the `actionParsers` list:
 
 ```sh
-./create_stac_action.sh <Name> [category] [subdir...]
+dart run create_stac_action.dart <Name> [category] [subdir...]
 
 # examples
-./create_stac_action.sh SubmitOrder        # → lib/stac_runtime/actions/actions/submit_order/
-./create_stac_action.sh SubmitOrder checkout # → lib/stac_runtime/actions/checkout/submit_order/
+dart run create_stac_action.dart SubmitOrder          # → lib/stac_runtime/actions/actions/submit_order/
+dart run create_stac_action.dart SubmitOrder checkout # → lib/stac_runtime/actions/checkout/submit_order/
 ```
 
 Mirroring `lib/stac_runtime/actions/wildcard_page_nav/`, the generated model extends `StacAction` (`actionType` getter), and the parser extends `StacActionParser<St<Name>Action>` with an `onCall` placeholder — dispatch through `Stac.onCallFromJson` (as `StWildcardPageNavActionParser` does) to keep behavior identical whether triggered from JSON or imperative code. Run `build_runner` after filling in the model.

@@ -54,16 +54,16 @@ When adding code, use this ownership rule:
 Custom server-driven widgets live under the **root `lib/stac_runtime/widgets/`**
 as a **model + `.g.dart` + parser** trio, exported from the `smoketrees_app_template`
 barrel and registered in `lib/stac_runtime/stac_registry.dart`. The root-level
-`create_stac_parser.sh` script scaffolds all of it:
+`create_stac_parser.dart` script scaffolds all of it on macOS and Windows:
 
 ```sh
 # from the repository root
-./create_stac_parser.sh <Name> [category] [subdir...]
+dart run create_stac_parser.dart <Name> [category] [subdir...]
 
 # examples
-./create_stac_parser.sh MyCard              # → lib/stac_runtime/widgets/layout/my_card/
-./create_stac_parser.sh ImageTile layout    # → lib/stac_runtime/widgets/layout/image_tile/
-./create_stac_parser.sh ChatBubble inbox    # → lib/stac_runtime/widgets/inbox/chat_bubble/
+dart run create_stac_parser.dart MyCard              # → lib/stac_runtime/widgets/layout/my_card/
+dart run create_stac_parser.dart ImageTile layout    # → lib/stac_runtime/widgets/layout/image_tile/
+dart run create_stac_parser.dart ChatBubble inbox    # → lib/stac_runtime/widgets/inbox/chat_bubble/
 ```
 
 What it does:
@@ -83,15 +83,15 @@ Then fill in the model's fields and the parser's `parse` body. See
 
 Actions use the same trio under **root `lib/stac_runtime/actions/`**, exported
 from the barrel and registered in the `actionParsers` list. Scaffold with the
-root-level `create_stac_action.sh`:
+root-level `create_stac_action.dart`:
 
 ```sh
 # from the repository root
-./create_stac_action.sh <Name> [category] [subdir...]
+dart run create_stac_action.dart <Name> [category] [subdir...]
 
 # examples
-./create_stac_action.sh SubmitOrder               # → lib/stac_runtime/actions/actions/submit_order/
-./create_stac_action.sh SubmitOrder checkout      # → lib/stac_runtime/actions/checkout/submit_order/
+dart run create_stac_action.dart SubmitOrder          # → lib/stac_runtime/actions/actions/submit_order/
+dart run create_stac_action.dart SubmitOrder checkout # → lib/stac_runtime/actions/checkout/submit_order/
 ```
 
 Creates `st_<snake>_action.dart` (a `@JsonSerializable` `StacAction` model with
