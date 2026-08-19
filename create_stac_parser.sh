@@ -20,10 +20,18 @@
 #   - registers the parser in lib/stac_runtime/stac_registry.dart,
 #   - runs build_runner to (re)generate the .g.dart file.
 #
-# Requires a Linux/macOS shell with sed, and the project's Flutter toolchain
-# (fvm) available.
+# Requires a bash shell (macOS/Linux, or Git Bash on Windows) and the
+# project's Flutter toolchain (fvm) available.
 
 set -euo pipefail
+
+# Portable in-place sed: BSD sed (macOS) needs an empty arg after -i,
+# GNU sed (Linux / Git Bash on Windows) does not.
+if sed --version >/dev/null 2>&1; then
+  sedi() { sed -i "$@"; }
+else
+  sedi() { sed -i '' "$@"; }
+fi
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <Name> [category] [subdir...]"
@@ -130,7 +138,7 @@ EOF
 
 # --- export from the barrel: lib/smoketrees_app_template.dart -------------
 BARREL="lib/smoketrees_app_template.dart"
-sed -i '' "/stac_runtime\/widgets\/layout\/wildcard_page\/wildcard_page_parser.dart';/a\\
+sedi "/stac_runtime\/widgets\/layout\/wildcard_page\/wildcard_page_parser.dart';/a\\
 export '$PKG_REL.dart';\\
 export '$PKG_REL\_parser.dart';" "$BARREL"
 
@@ -138,7 +146,7 @@ export '$PKG_REL\_parser.dart';" "$BARREL"
 REG="lib/stac_runtime/stac_registry.dart"
 
 # add the parser instance before the closing "];" of the parsers list
-sed -i '' "/^    WildcardPageParser(),/a\\
+sedi "/^    WildcardPageParser(),/a\\
     ${Name}Parser()," "$REG"
 
 echo "Created custom Stac parser '$Name'"
@@ -149,11 +157,15 @@ echo "Exported from $BARREL"
 echo "Registered ${Name}Parser() in $REG"
 
 # --- regenerate .g.dart ---------------------------------------------------
-if command -v fvm >/dev/null 2>&1; then
+FVM=fvm
+if command -v fvm.bat >/dev/null 2>&1; then
+  FVM=fvm.bat
+fi
+if command -v "$FVM" >/dev/null 2>&1; then
   # Don't pre-write the .g.dart: an existing placeholder makes build_runner
   # treat the output as up-to-date and skip generation.
   rm -f "$DIR/st_${snakecase}.g.dart"
-  fvm dart run build_runner build --delete-conflicting-outputs
+  "$FVM" dart run build_runner build --delete-conflicting-outputs
 else
   # Fallback placeholder so the file still exists for manual generation.
   cat > "$DIR/st_${snakecase}.g.dart" <<EOF
