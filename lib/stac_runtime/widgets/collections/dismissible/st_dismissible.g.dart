@@ -16,13 +16,11 @@ StDismissible _$StDismissibleFromJson(Map<String, dynamic> json) =>
       secondaryBackground: json['secondaryBackground'] == null
           ? null
           : StacWidget.fromJson(
-              json['secondaryBackground'] as Map<String, dynamic>,
-            ),
+              json['secondaryBackground'] as Map<String, dynamic>),
       confirmDialog: json['confirmDialog'] == null
           ? null
           : StDismissibleConfirmDialog.fromJson(
-              json['confirmDialog'] as Map<String, dynamic>,
-            ),
+              json['confirmDialog'] as Map<String, dynamic>),
       onStartToEnd: json['onStartToEnd'] == null
           ? null
           : StacAction.fromJson(json['onStartToEnd'] as Map<String, dynamic>),
@@ -48,21 +46,21 @@ Map<String, dynamic> _$StDismissibleToJson(StDismissible instance) =>
     };
 
 StDismissibleConfirmDialog _$StDismissibleConfirmDialogFromJson(
-  Map<String, dynamic> json,
-) => StDismissibleConfirmDialog(
-  title: json['title'] as String,
-  message: json['message'] as String,
-  cancelLabel: json['cancelLabel'] as String? ?? 'Cancel',
-  confirmLabel: json['confirmLabel'] as String? ?? 'Confirm',
-  confirmColor: json['confirmColor'] as String?,
-);
+        Map<String, dynamic> json) =>
+    StDismissibleConfirmDialog(
+      title: json['title'] as String,
+      message: json['message'] as String,
+      cancelLabel: json['cancelLabel'] as String? ?? 'Cancel',
+      confirmLabel: json['confirmLabel'] as String? ?? 'Confirm',
+      confirmColor: json['confirmColor'] as String?,
+    );
 
 Map<String, dynamic> _$StDismissibleConfirmDialogToJson(
-  StDismissibleConfirmDialog instance,
-) => <String, dynamic>{
-  'title': instance.title,
-  'message': instance.message,
-  'cancelLabel': instance.cancelLabel,
-  'confirmLabel': instance.confirmLabel,
-  'confirmColor': instance.confirmColor,
-};
+        StDismissibleConfirmDialog instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'message': instance.message,
+      'cancelLabel': instance.cancelLabel,
+      'confirmLabel': instance.confirmLabel,
+      'confirmColor': instance.confirmColor,
+    };

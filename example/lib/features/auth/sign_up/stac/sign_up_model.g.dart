@@ -9,4 +9,6 @@ part of 'sign_up_model.dart';
 SignUpModel _$SignUpModelFromJson(Map<String, dynamic> json) => SignUpModel();
 
 Map<String, dynamic> _$SignUpModelToJson(SignUpModel instance) =>
-    <String, dynamic>{'type': instance.type};
+    <String, dynamic>{
+      'type': instance.type,
+    };

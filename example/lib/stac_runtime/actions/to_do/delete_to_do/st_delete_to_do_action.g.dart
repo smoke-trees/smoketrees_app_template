@@ -7,9 +7,14 @@ part of 'st_delete_to_do_action.dart';
 // **************************************************************************
 
 StacDeleteToDoAction _$StacDeleteToDoActionFromJson(
-  Map<String, dynamic> json,
-) => StacDeleteToDoAction(id: json['id'] as String);
+        Map<String, dynamic> json) =>
+    StacDeleteToDoAction(
+      id: json['id'] as String,
+    );
 
 Map<String, dynamic> _$StacDeleteToDoActionToJson(
-  StacDeleteToDoAction instance,
-) => <String, dynamic>{'id': instance.id, 'actionType': instance.actionType};
+        StacDeleteToDoAction instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'actionType': instance.actionType,
+    };

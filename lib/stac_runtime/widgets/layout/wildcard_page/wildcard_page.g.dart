@@ -7,10 +7,10 @@ part of 'wildcard_page.dart';
 // **************************************************************************
 
 WildcardPage _$WildcardPageFromJson(Map<String, dynamic> json) => WildcardPage(
-  children: (json['children'] as Map<String, dynamic>).map(
-    (k, e) => MapEntry(k, StacWidget.fromJson(e as Map<String, dynamic>)),
-  ),
-);
+      children: (json['children'] as Map<String, dynamic>).map(
+        (k, e) => MapEntry(k, StacWidget.fromJson(e as Map<String, dynamic>)),
+      ),
+    );
 
 Map<String, dynamic> _$WildcardPageToJson(WildcardPage instance) =>
     <String, dynamic>{

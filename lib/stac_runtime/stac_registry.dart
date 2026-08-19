@@ -25,5 +25,7 @@ class StacParsers {
 
   static final List<StacActionParser> actionParsers = [
     StWildcardPageNavActionParser(),
+    StSubmitOrderActionParser(),
+    StSubmitOrderActionParser(),
   ];
 }

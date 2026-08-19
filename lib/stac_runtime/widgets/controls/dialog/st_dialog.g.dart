@@ -7,56 +7,53 @@ part of 'st_dialog.dart';
 // **************************************************************************
 
 StDialog _$StDialogFromJson(Map<String, dynamic> json) => StDialog(
-  backgroundColor: json['backgroundColor'] as String?,
-  elevation: (json['elevation'] as num?)?.toDouble(),
-  shadowColor: json['shadowColor'] as String?,
-  surfaceTintColor: json['surfaceTintColor'] as String?,
-  insetAnimationDuration: json['insetAnimationDuration'] == null
-      ? null
-      : StacDuration.fromJson(
-          json['insetAnimationDuration'] as Map<String, dynamic>,
-        ),
-  insetAnimationCurve: $enumDecodeNullable(
-    _$StCurvesEnumMap,
-    json['insetAnimationCurve'],
-  ),
-  insetPadding: json['insetPadding'] == null
-      ? const StacEdgeInsets(left: 40, right: 40, top: 24, bottom: 24)
-      : StacEdgeInsets.fromJson(json['insetPadding']),
-  clipBehavior: $enumDecodeNullable(_$StacClipEnumMap, json['clipBehavior']),
-  shape: json['shape'] == null
-      ? null
-      : StacShapeBorder.fromJson(json['shape'] as Map<String, dynamic>),
-  alignment: $enumDecodeNullable(_$StacAlignmentEnumMap, json['alignment']),
-  child: json['child'] == null
-      ? null
-      : StacWidget.fromJson(json['child'] as Map<String, dynamic>),
-  semanticsRole:
-      $enumDecodeNullable(_$StSemanticsRoleEnumMap, json['semanticsRole']) ??
-      StSemanticsRole.dialog,
-  constraints: json['constraints'] == null
-      ? null
-      : StacBoxConstraints.fromJson(
-          json['constraints'] as Map<String, dynamic>,
-        ),
-);
+      backgroundColor: json['backgroundColor'] as String?,
+      elevation: (json['elevation'] as num?)?.toDouble(),
+      shadowColor: json['shadowColor'] as String?,
+      surfaceTintColor: json['surfaceTintColor'] as String?,
+      insetAnimationDuration: json['insetAnimationDuration'] == null
+          ? null
+          : StacDuration.fromJson(
+              json['insetAnimationDuration'] as Map<String, dynamic>),
+      insetAnimationCurve:
+          $enumDecodeNullable(_$StCurvesEnumMap, json['insetAnimationCurve']),
+      insetPadding: json['insetPadding'] == null
+          ? const StacEdgeInsets(left: 40, right: 40, top: 24, bottom: 24)
+          : StacEdgeInsets.fromJson(json['insetPadding']),
+      clipBehavior:
+          $enumDecodeNullable(_$StacClipEnumMap, json['clipBehavior']),
+      shape: json['shape'] == null
+          ? null
+          : StacShapeBorder.fromJson(json['shape'] as Map<String, dynamic>),
+      alignment: $enumDecodeNullable(_$StacAlignmentEnumMap, json['alignment']),
+      child: json['child'] == null
+          ? null
+          : StacWidget.fromJson(json['child'] as Map<String, dynamic>),
+      semanticsRole: $enumDecodeNullable(
+              _$StSemanticsRoleEnumMap, json['semanticsRole']) ??
+          StSemanticsRole.dialog,
+      constraints: json['constraints'] == null
+          ? null
+          : StacBoxConstraints.fromJson(
+              json['constraints'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$StDialogToJson(StDialog instance) => <String, dynamic>{
-  'backgroundColor': instance.backgroundColor,
-  'elevation': instance.elevation,
-  'shadowColor': instance.shadowColor,
-  'surfaceTintColor': instance.surfaceTintColor,
-  'insetAnimationDuration': instance.insetAnimationDuration?.toJson(),
-  'insetAnimationCurve': _$StCurvesEnumMap[instance.insetAnimationCurve],
-  'insetPadding': instance.insetPadding?.toJson(),
-  'clipBehavior': _$StacClipEnumMap[instance.clipBehavior],
-  'shape': instance.shape?.toJson(),
-  'alignment': _$StacAlignmentEnumMap[instance.alignment],
-  'child': instance.child?.toJson(),
-  'semanticsRole': _$StSemanticsRoleEnumMap[instance.semanticsRole]!,
-  'constraints': instance.constraints?.toJson(),
-  'type': instance.type,
-};
+      'backgroundColor': instance.backgroundColor,
+      'elevation': instance.elevation,
+      'shadowColor': instance.shadowColor,
+      'surfaceTintColor': instance.surfaceTintColor,
+      'insetAnimationDuration': instance.insetAnimationDuration?.toJson(),
+      'insetAnimationCurve': _$StCurvesEnumMap[instance.insetAnimationCurve],
+      'insetPadding': instance.insetPadding?.toJson(),
+      'clipBehavior': _$StacClipEnumMap[instance.clipBehavior],
+      'shape': instance.shape?.toJson(),
+      'alignment': _$StacAlignmentEnumMap[instance.alignment],
+      'child': instance.child?.toJson(),
+      'semanticsRole': _$StSemanticsRoleEnumMap[instance.semanticsRole]!,
+      'constraints': instance.constraints?.toJson(),
+      'type': instance.type,
+    };
 
 const _$StCurvesEnumMap = {
   StCurves.bounceIn: 'bounceIn',

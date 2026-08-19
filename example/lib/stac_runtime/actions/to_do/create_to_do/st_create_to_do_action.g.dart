@@ -10,4 +10,6 @@ StCreateToDoAction _$StCreateToDoActionFromJson(Map<String, dynamic> json) =>
     StCreateToDoAction();
 
 Map<String, dynamic> _$StCreateToDoActionToJson(StCreateToDoAction instance) =>
-    <String, dynamic>{'actionType': instance.actionType};
+    <String, dynamic>{
+      'actionType': instance.actionType,
+    };

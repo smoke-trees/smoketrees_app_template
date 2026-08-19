@@ -7,32 +7,31 @@ part of 'st_material.dart';
 // **************************************************************************
 
 StMaterial _$StMaterialFromJson(Map<String, dynamic> json) => StMaterial(
-  materialType:
-      $enumDecodeNullable(_$StacMaterialTypeEnumMap, json['materialType']) ??
-      StacMaterialType.canvas,
-  elevation: (json['elevation'] as num?)?.toDouble() ?? 0.0,
-  color: json['color'] as String?,
-  shadowColor: json['shadowColor'] as String?,
-  surfaceTintColor: json['surfaceTintColor'] as String?,
-  textStyle: json['textStyle'] == null
-      ? null
-      : StacTextStyle.fromJson(json['textStyle']),
-  borderRadius: json['borderRadius'] == null
-      ? null
-      : StacBorderRadius.fromJson(json['borderRadius']),
-  borderOnForeground: json['borderOnForeground'] as bool? ?? true,
-  clipBehavior:
-      $enumDecodeNullable(_$StacClipEnumMap, json['clipBehavior']) ??
-      StacClip.none,
-  animationDuration: json['animationDuration'] == null
-      ? const StacDuration(milliseconds: 200)
-      : StacDuration.fromJson(
-          json['animationDuration'] as Map<String, dynamic>,
-        ),
-  child: json['child'] == null
-      ? null
-      : StacWidget.fromJson(json['child'] as Map<String, dynamic>),
-);
+      materialType: $enumDecodeNullable(
+              _$StacMaterialTypeEnumMap, json['materialType']) ??
+          StacMaterialType.canvas,
+      elevation: (json['elevation'] as num?)?.toDouble() ?? 0.0,
+      color: json['color'] as String?,
+      shadowColor: json['shadowColor'] as String?,
+      surfaceTintColor: json['surfaceTintColor'] as String?,
+      textStyle: json['textStyle'] == null
+          ? null
+          : StacTextStyle.fromJson(json['textStyle']),
+      borderRadius: json['borderRadius'] == null
+          ? null
+          : StacBorderRadius.fromJson(json['borderRadius']),
+      borderOnForeground: json['borderOnForeground'] as bool? ?? true,
+      clipBehavior:
+          $enumDecodeNullable(_$StacClipEnumMap, json['clipBehavior']) ??
+              StacClip.none,
+      animationDuration: json['animationDuration'] == null
+          ? const StacDuration(milliseconds: 200)
+          : StacDuration.fromJson(
+              json['animationDuration'] as Map<String, dynamic>),
+      child: json['child'] == null
+          ? null
+          : StacWidget.fromJson(json['child'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$StMaterialToJson(StMaterial instance) =>
     <String, dynamic>{

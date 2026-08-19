@@ -9,9 +9,8 @@ part of 'to_do_list_model.dart';
 ToDoListModel _$ToDoListModelFromJson(Map<String, dynamic> json) =>
     ToDoListModel(
       appBarTitle: json['appBarTitle'] as String,
-      toDoTileModel: ToDoTileModel.fromJson(
-        json['toDoTileModel'] as Map<String, dynamic>,
-      ),
+      toDoTileModel:
+          ToDoTileModel.fromJson(json['toDoTileModel'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ToDoListModelToJson(ToDoListModel instance) =>

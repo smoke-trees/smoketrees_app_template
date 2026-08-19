@@ -7,7 +7,12 @@ part of 'splash_page_model.dart';
 // **************************************************************************
 
 SplashPageModel _$SplashPageModelFromJson(Map<String, dynamic> json) =>
-    SplashPageModel(logoAsset: json['logoAsset'] as String);
+    SplashPageModel(
+      logoAsset: json['logoAsset'] as String,
+    );
 
 Map<String, dynamic> _$SplashPageModelToJson(SplashPageModel instance) =>
-    <String, dynamic>{'logoAsset': instance.logoAsset, 'type': instance.type};
+    <String, dynamic>{
+      'logoAsset': instance.logoAsset,
+      'type': instance.type,
+    };
