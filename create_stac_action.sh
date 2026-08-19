@@ -38,8 +38,8 @@ shift
 # --- name transforms -------------------------------------------------------
 lowercase=$(echo "$Name" | tr '[:upper:]' '[:lower:]')
 # SubmitOrder -> submit_order ; HTTPAction -> h_t_t_p_action (kept simple)
-snakecase=$(echo "$Name" | sed -r 's/([a-z0-9])([A-Z])/\1_\L\2/g' | tr '[:upper:]' '[:lower:]')
-kebabcase=$(echo "$Name" | sed -r 's/([a-z0-9])([A-Z])/\1-\L\2/g' | tr '[:upper:]' '[:lower:]')
+snakecase=$(echo "$Name" | sed -E 's/([a-z0-9])([A-Z])/\1_\2/g' | tr '[:upper:]' '[:lower:]')
+kebabcase=$(echo "$Name" | sed -E 's/([a-z0-9])([A-Z])/\1-\2/g' | tr '[:upper:]' '[:lower:]')
 
 # Action type key sent over JSON, e.g. "submit_order"
 actionType="$snakecase"
@@ -75,11 +75,11 @@ part 'st_${snakecase}_action.g.dart';
 /// Custom [StacAction] for the "$actionType" action type.
 ///
 /// Add your action's fields here (e.g. an id, payload, or options), then
-/// dispatch them from the parser's `onCall`.
+/// dispatch them from the parser's \`onCall\`.
 ///
-/// ```json
+/// \`\`\`json
 /// { "actionType": "$actionType" }
-/// ```
+/// \`\`\`
 @JsonSerializable(explicitToJson: true)
 class $Action extends StacAction {
   const $Action();
@@ -104,7 +104,7 @@ import 'st_${snakecase}_action.dart';
 
 /// Parses and dispatches [$Action].
 ///
-/// Replace the placeholder body of `onCall` with your action's behaviour
+/// Replace the placeholder body of \`onCall\` with your action's behaviour
 /// (navigation, API calls, form submission, ...). Dispatch through
 /// \`Stac.onCallFromJson\` (as the built-in actions do) to keep behaviour
 /// identical whether triggered from JSON or imperative code.
@@ -124,19 +124,9 @@ class $ActionParser extends StacActionParser<$Action> {
 }
 EOF
 
-# --- .g.dart placeholder (overwritten by build_runner) --------------------
-cat > "$DIR/st_${snakecase}_action.g.dart" <<EOF
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'st_${snakecase}_action.dart';
-
-// Run `fvm dart run build_runner build --delete-conflicting-outputs`
-// to generate this file from the model's @JsonSerializable annotations.
-EOF
-
 # --- export from the barrel: lib/smoketrees_app_template.dart -------------
 BARREL="lib/smoketrees_app_template.dart"
-sed -i "/stac_runtime\/actions\/wildcard_page_nav\/st_wildcard_page_nav_parser.dart';/a\\
+sed -i '' "/stac_runtime\/actions\/wildcard_page_nav\/st_wildcard_page_nav_parser.dart';/a\\
 export '$PKG_REL.dart';\\
 export '$PKG_REL\_parser.dart';" "$BARREL"
 
@@ -144,7 +134,7 @@ export '$PKG_REL\_parser.dart';" "$BARREL"
 REG="lib/stac_runtime/stac_registry.dart"
 
 # add the parser instance before the closing "];" of the actionParsers list
-sed -i "/^    StWildcardPageNavActionParser(),/a\\
+sed -i '' "/^    StWildcardPageNavActionParser(),/a\\
     ${ActionParser}()," "$REG"
 
 echo "Created custom Stac action parser '$Name'"
@@ -156,8 +146,20 @@ echo "Registered ${ActionParser}() in $REG"
 
 # --- regenerate .g.dart ---------------------------------------------------
 if command -v fvm >/dev/null 2>&1; then
+  # Don't pre-write the .g.dart: an existing placeholder makes build_runner
+  # treat the output as up-to-date and skip generation.
+  rm -f "$DIR/st_${snakecase}_action.g.dart"
   fvm dart run build_runner build --delete-conflicting-outputs
 else
+  # Fallback placeholder so the file still exists for manual generation.
+  cat > "$DIR/st_${snakecase}_action.g.dart" <<EOF
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'st_${snakecase}_action.dart';
+
+// Run \`fvm dart run build_runner build --delete-conflicting-outputs\`
+// to generate this file from the model's @JsonSerializable annotations.
+EOF
   echo
   echo "fvm not found — run the generator manually:"
   echo "  fvm dart run build_runner build --delete-conflicting-outputs"
