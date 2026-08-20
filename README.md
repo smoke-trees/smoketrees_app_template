@@ -58,7 +58,7 @@ A quick-reference table for common tasks. Each row links to a fuller section fur
 | Edit an existing screen's layout | Its DSL entry file (e.g. `st_splash_page.dart`) | [Editing a screen](#daily-loop-the-watch-session) |
 | Add a brand-new screen | New DSL file with `@StacScreen`, then register its route | [Building your first screen](#building-your-first-screen-step-by-step) |
 | Change the app's theme/colors | The `@StacThemeRef` DSL file (e.g. `st_theme.dart`) — costs a hot **restart**, not reload | [Editing a screen](#daily-loop-the-watch-session), [Gotchas](#gotchas--sharp-edges) |
-| Add a time-boxed page (sale banner, campaign, one-off announcement) **without a new app release** | Add it to `WildcardPageModel.children` | [Wildcard pages](#wildcard-pages-one-off-many-screens) |
+| Add a time-boxed page (sale banner, campaign, one-off announcement) **without a new app release** | Add it to `WildcardPageModel.children` | [Wildcard pages](#wildcard-pages-one-route-many-screens) |
 | Build a new reusable widget (server-driven) | `dart run create_stac_parser.dart <Name> [category]` | [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser) |
 | Build a new reusable Flutter widget (not server-driven) | Add it under `lib/shared/` directly | [What this template provides](#what-this-template-provides) |
 | Add new tap/navigation behavior triggerable from JSON | `dart run create_stac_action.dart <Name> [category]` | [Custom Stac actions](#custom-stac-actions) |
@@ -231,16 +231,15 @@ The Stac CLI is sourced from the same monorepo, but it is installed separately a
 flutter pub get
 ```
 
-Run the reference application's Flutter entrypoint.
-
 The `stac` package is pulled from **Git, not pub.dev** — `pubspec.yaml`:
 
 ```yaml
 dependencies:
   stac:
     git:
-      url: https://github.com/RJ2607/mod_stac.git
+      url: https://github.com/smoke-trees/st_sdui.git
       ref: main
+      path: packages/stac
 ```
 
 > It tracks `main` unpinned. Running `flutter pub get` months from now may resolve a different Stac version.
