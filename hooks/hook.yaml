@@ -1,0 +1,4 @@
+pre_gen:
+  - hooks/pre_gen/hook.dart
+post_gen:
+  - hooks/post_gen/hook.dart

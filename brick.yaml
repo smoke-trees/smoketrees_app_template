@@ -1,0 +1,64 @@
+name: smoketrees_app
+description: A complete Stac (Server-Driven UI) Flutter application template with reusable widgets, custom parsers, actions, networking, storage, and theming infrastructure. Generates Android, iOS, web, Windows, macOS, and Linux projects with correct bundle IDs and package names.
+version: 1.0.0
+
+environment:
+  mason: ">=0.1.0-dev <0.2.0"
+
+repository: https://github.com/smoke-trees/st_sdui
+
+vars:
+  project_name:
+    type: string
+    description: "Dart package name in snake_case (e.g., health_habits, stac_cart_demo). Used for: pubspec.yaml name, Dart imports, Android package namespace"
+    prompt: Project name (snake_case)
+    default: my_stac_app
+    
+  organization:
+    type: string
+    description: "Organization identifier in reverse-domain format (e.g., com.smoketrees, com.example). Used for: Android applicationId, iOS PRODUCT_BUNDLE_IDENTIFIER"
+    prompt: Organization (reverse-domain, e.g., com.company)
+    default: com.example
+    
+  app_name:
+    type: string
+    description: "Human-readable app display name (e.g., Health Habits, Stac Cart Demo). Used for: iOS CFBundleDisplayName, Android app label, pubspec description"
+    prompt: App display name
+    default: My Stac App
+    
+  description:
+    type: string
+    description: Short one-line description for pubspec.yaml
+    prompt: App description
+    default: A Stac-powered Flutter application
+    
+  include_example_screens:
+    type: boolean
+    description: "Include reference example screens (splash, sign_in, counter, auth) in example/lib/features. Set to false for minimal template"
+    prompt: Include example screens?
+    default: false
+    
+  include_network_layer:
+    type: boolean
+    description: "Include Dio networking, auth interceptors, response models, and backend integration in lib/core/network. Set to false if you only need local Stac rendering"
+    prompt: Include network layer?
+    default: true
+    
+  include_firebase:
+    type: boolean
+    description: "Include Firebase messaging and local notifications dependencies in pubspec.yaml"
+    prompt: Include Firebase?
+    default: false
+    
+  platforms:
+    type: array
+    description: "Target platforms to include native project files for. Selected platforms will have Android, iOS, web, or desktop configurations generated. Unselected platforms skip their __brick__/{platform} directories"
+    prompt: Target platforms
+    default: [android, ios, web]
+    values:
+      - android
+      - ios
+      - web
+      - windows
+      - macos
+      - linux
