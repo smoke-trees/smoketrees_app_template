@@ -16,7 +16,13 @@ Use [Mason](https://docs.brickhub.dev) to generate a new project from this templ
 dart pub global activate mason_cli
 ```
 
-### 2. Add the Brick
+### 2. Initialize Mason
+
+```bash
+mason init
+```
+
+### 3. Add the Brick
 
 **Local (if you have the repo cloned):**
 ```bash
@@ -28,13 +34,13 @@ mason add smoketrees_app --path "C:\smoketrees\app\smoketrees_app_template"
 mason add smoketrees_app --git-url https://github.com/smoke-trees/smoketrees_app_template.git
 ```
 
-### 3. Generate Your Project
+### 4. Generate Your Project
 
 ```bash
 mason make smoketrees_app --project_name my_app --organization com.example --app_name "My App"
 ```
 
-### 4. Start Development
+### 5. Start Development
 
 ```bash
 cd my_app
