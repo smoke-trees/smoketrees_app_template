@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stac/stac.dart';
-
 import '../counter_screen_controller.dart';
 import 'counter_screen.dart';
 
 class CounterScreenParser extends StacParser<CounterScreen> {
+  const CounterScreenParser();
+
   @override
   String get type => 'counter_screen';
 
@@ -15,39 +16,65 @@ class CounterScreenParser extends StacParser<CounterScreen> {
 
   @override
   Widget parse(BuildContext context, CounterScreen model) {
-    final controller = Get.put(CounterScreenController());
+    return _CounterScreenWidget(model: model);
+  }
+}
 
+class _CounterScreenWidget extends StatefulWidget {
+  const _CounterScreenWidget({required this.model});
+
+  final CounterScreen model;
+
+  @override
+  State<_CounterScreenWidget> createState() => _CounterScreenWidgetState();
+}
+
+class _CounterScreenWidgetState extends State<_CounterScreenWidget> {
+  late CounterController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.put(CounterController(widget.model.initialCount));
+  }
+
+  @override
+  void dispose() {
+    Get.delete<CounterController>();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(model.title ?? 'Counter'),
-      ),
+      appBar: AppBar(title: Text(widget.model.title)),
       body: Center(
-        child: Obx(
-          () => Text(
-            '${controller.count.value}',
-            style: Theme.of(context).textTheme.headlineLarge,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(widget.model.description),
+            Obx(
+              () => Text(
+                '${_controller.count.value}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          FloatingActionButton.small(
-            heroTag: 'increment',
-            onPressed: controller.increment,
-            child: const Icon(Icons.add),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton.small(
-            heroTag: 'decrement',
-            onPressed: controller.decrement,
+          FloatingActionButton(
+            onPressed: () => _controller.decrement(1),
+            tooltip: 'Decrement',
             child: const Icon(Icons.remove),
           ),
-          const SizedBox(height: 8),
-          FloatingActionButton.small(
-            heroTag: 'reset',
-            onPressed: controller.reset,
-            child: const Icon(Icons.refresh),
+          const SizedBox(width: 12),
+          FloatingActionButton(
+            onPressed: () => _controller.increment(1),
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
           ),
         ],
       ),

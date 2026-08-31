@@ -5,19 +5,7 @@ part 'sign_up_model.g.dart';
 
 @JsonSerializable()
 class SignUpModel extends StacWidget {
-  const SignUpModel({
-    this.title,
-    this.subtitle,
-    this.nameHint,
-    this.emailHint,
-    this.passwordHint,
-  });
-
-  final String? title;
-  final String? subtitle;
-  final String? nameHint;
-  final String? emailHint;
-  final String? passwordHint;
+  const SignUpModel();
 
   @override
   String get type => 'sign_up';

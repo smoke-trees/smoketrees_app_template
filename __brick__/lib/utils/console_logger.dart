@@ -21,17 +21,17 @@ class ConsoleLogger {
 
   /// Log an info message
   static void info(String message) {
-    _log(message, LogLevel.info, '\x1B[34m');
+    _log(message, LogLevel.info, '\x1B[34m'); // Blue
   }
 
   /// Log a success message
   static void success(String message) {
-    _log(message, LogLevel.success, '\x1B[32m');
+    _log(message, LogLevel.success, '\x1B[32m'); // Green
   }
 
   /// Log a warning message
   static void warn(String message) {
-    _log(message, LogLevel.warn, '\x1B[33m');
+    _log(message, LogLevel.warn, '\x1B[33m'); // Yellow
   }
 
   /// Log an error message, optionally carrying the underlying [error] and
@@ -45,7 +45,7 @@ class ConsoleLogger {
     _log(
       message,
       LogLevel.error,
-      '\x1B[31m',
+      '\x1B[31m', // Red
       name: name,
       error: error,
       stackTrace: stackTrace,

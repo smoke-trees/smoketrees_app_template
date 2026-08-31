@@ -28,6 +28,7 @@ class StFutureDataParser extends StacParser<StFutureData> {
               : const Center(child: Text('Failed to load'));
         }
 
+        // Inject fetched data into the child JSON template before rendering
         final data = snapshot.data!.data as Map<String, dynamic>;
         final resolvedJson = _injectData(model.childTemplate, data);
 
@@ -36,6 +37,7 @@ class StFutureDataParser extends StacParser<StFutureData> {
     );
   }
 
+  // Simple {{key}} substitution â€” walks the JSON tree replacing placeholders with fetched values
   dynamic _injectData(dynamic node, Map<String, dynamic> data) {
     if (node is String) {
       final match = RegExp(r'^\{\{(\w+)\}\}$').firstMatch(node);

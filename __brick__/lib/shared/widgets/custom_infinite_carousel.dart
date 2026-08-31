@@ -53,6 +53,7 @@ class _CustomInfiniteCarouselState<T> extends State<CustomInfiniteCarousel<T>> {
     final position = _controller.position.pixels;
     final max = _controller.position.maxScrollExtent;
 
+    // Remove listener temporarily to avoid infinite recursion
     _controller.removeListener(_onScroll);
 
     if (position <= widget.itemExtent) {
@@ -61,6 +62,7 @@ class _CustomInfiniteCarouselState<T> extends State<CustomInfiniteCarousel<T>> {
       _controller.jumpTo(position - _singleListWidth);
     }
 
+    // Re-add listener after position change
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _controller.addListener(_onScroll);

@@ -25,7 +25,9 @@ class _ScaleAnimationState extends State<ScaleAnimation>
 
     animation = Tween<double>(begin: 0, end: 1).animate(controller)
       ..addListener(() {
-        setState(() {});
+        setState(() {
+          // The state that has changed here is the animation object’s value.
+        });
       });
   }
 

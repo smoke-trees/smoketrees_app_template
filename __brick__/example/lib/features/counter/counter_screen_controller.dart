@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CounterScreenController extends GetxController {
-  final count = 0.obs;
+class CounterController extends GetxController {
+  CounterController(int? initialCount) : count = (initialCount ?? 0).obs;
 
-  void increment() => count++;
-  void decrement() => count--;
-  void reset() => count.value = 0;
+  final RxInt count;
+
+  void increment(int value) => count.value += value;
+  void decrement(int value) => count.value -= value;
 }

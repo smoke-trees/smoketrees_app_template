@@ -68,15 +68,17 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
     try {
       await _controller.runJavaScript('''
         player.getCurrentTime().then(function(currentTime) {
-          if (Math.abs(currentTime - $seconds) > 0.5) {
+          if (Math.abs(currentTime - $seconds) > 0.5) {  // Only seek if difference is more than 0.5 seconds
             return player.setCurrentTime($seconds);
           }
         }).then(function() {
+          console.log('Seek success to $seconds');
           VimeoPlayer.postMessage(JSON.stringify({
             type: 'seekComplete',
             time: $seconds
           }));
         }).catch(function(error) {
+          console.error('Seek failed:', error);
           VimeoPlayer.postMessage(JSON.stringify({
             type: 'seekError',
             error: error.toString()
@@ -92,6 +94,7 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
     try {
       if (message.message != "undefined") {
         final data = jsonDecode(message.message);
+        print('Received message: ${message.message}');
 
         switch (data['type']) {
           case 'ready':
@@ -104,8 +107,10 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
             }
             break;
           case 'seekComplete':
+            print('Seek completed to ${data['time']} seconds');
             break;
           case 'seekError':
+            print('Seek error: ${data['error']}');
             break;
           case 'progress':
             if (widget.onProgress != null) {
@@ -157,7 +162,7 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
          }
          #player-wrapper {
            position: relative;
-           padding-bottom: 56.25%;
+           padding-bottom: 56.25%; /* 16:9 aspect ratio */
            height: 0;
            overflow: hidden;
            max-width: 100%;
@@ -190,6 +195,7 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
            player = new Vimeo.Player(iframe);
            
            player.ready().then(function() {
+             console.log('Player ready');
              VimeoPlayer.postMessage(JSON.stringify({type: 'ready'}));
              setupEventListeners();
            }).catch(function(error) {
@@ -225,6 +231,7 @@ class _VimeoPlayerState extends State<VimeoPlayer> {
            });
          }
          
+         // Initialize when document is ready
          if (document.readyState === 'complete' || document.readyState === 'interactive') {
            initializePlayer();
          } else {

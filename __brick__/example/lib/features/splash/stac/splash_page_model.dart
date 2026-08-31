@@ -5,10 +5,8 @@ part 'splash_page_model.g.dart';
 
 @JsonSerializable()
 class SplashPageModel extends StacWidget {
-  const SplashPageModel({this.title, this.subtitle});
-
-  final String? title;
-  final String? subtitle;
+  final String logoAsset;
+  const SplashPageModel({required this.logoAsset});
 
   @override
   String get type => 'splash_page';

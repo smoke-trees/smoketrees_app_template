@@ -6,9 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:{{project_name}}/shared/animations/fade_in_animation.dart';
+// import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../shared/animations/fade_in_animation.dart';
 import 'console_logger.dart';
 
 class AppUtils {
@@ -63,6 +64,27 @@ class AppUtils {
       return '$day$suffix $month, $year';
     }
   }
+  // TODO: Uncomment when User model is ready
+  // Future<User?> extractUserDataFromJWT(String jwtToken) async {
+  //   try {
+  //     final parts = jwtToken.split('.');
+  //     if (parts.length != 3) {
+  //       return null;
+  //     }
+  //     final payload = parts[1];
+  //     // Add padding characters if needed
+  //     final int padLength = (4 - payload.length % 4) % 4;
+  //     final paddedPayload = payload + '=' * padLength;
+  //     final decoded = base64Url.decode(paddedPayload);
+  //     final jsonString = utf8.decode(decoded);
+  //     final userData = json.decode(jsonString);
+  //     return User.fromJson(userData);
+  //   } catch (e) {
+  //     ConsoleLogger.error('Error decoding JWT token: $e');
+  //     e.toString();
+  //     return null;
+  //   }
+  // }
 
   static bool isAndroidGestureNavigationEnabled(BuildContext context) {
     final value = MediaQuery.of(context).systemGestureInsets.bottom;
@@ -99,7 +121,7 @@ class AppUtils {
   Color getColorFromHex(String hexCode) {
     final cleanedHex = hexCode.replaceFirst('#', '');
     final colorInt = int.parse(cleanedHex, radix: 16);
-    return Color(0xFF000000 | colorInt);
+    return Color(0xFF000000 | colorInt); // Ensures full opacity
   }
 
   String? sentenceCasing(String? sentence) {
@@ -110,6 +132,27 @@ class AppUtils {
       (match) => match.group(0)!.toUpperCase(),
     );
   }
+
+  // Future<User?> extractUserDataFromJWT(String jwtToken) async {
+  //   try {
+  //     final parts = jwtToken.split('.');
+  //     if (parts.length != 3) {
+  //       return null;
+  //     }
+  //     final payload = parts[1];
+  //     // Add padding characters if needed
+  //     final int padLength = (4 - payload.length % 4) % 4;
+  //     final paddedPayload = payload + '=' * padLength;
+  //     final decoded = base64Url.decode(paddedPayload);
+  //     final jsonString = utf8.decode(decoded);
+  //     final userData = json.decode(jsonString);
+  //     return User.fromJson(userData);
+  //   } catch (e) {
+  //     log('Error decoding JWT token: $e');
+  //     e.toString();
+  //     return null;
+  //   }
+  // }
 
   Future<void> updateApp() async {
     if (Platform.isAndroid) {
@@ -198,13 +241,20 @@ class AppUtils {
   static getCurrencySymbol(String text) {
     switch (text) {
       case "INR":
-        return "₹";
+        return "â‚¹";
       case "USD":
         return "\$";
       case "EUR":
-        return "€";
+        return "â‚¬";
     }
   }
+
+  // Future<String> getApiKey() async {
+  //   PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  //   String apiKey =
+  //       packageInfo.applicationInfo.metaData['com.google.android.geo.API_KEY'];
+  //   return apiKey;
+  // }
 
   static String generateLoremIpsum({int numParagraphs = 1}) {
     String loremIpsum = "";
@@ -346,7 +396,7 @@ String convertToCurrencyRange(String input) {
   String maxAmount = (maxValue * 1000).toString();
   String formattedMinAmount = formatCurrency(minAmount);
   String formattedMaxAmount = formatCurrency(maxAmount);
-  return "₹$formattedMinAmount-₹$formattedMaxAmount";
+  return "â‚¹$formattedMinAmount-â‚¹$formattedMaxAmount";
 }
 
 String formatCurrency(String value) {
@@ -391,6 +441,24 @@ String formatAmount(int amount) {
   }
   return result;
 }
+
+// String? getProductTag(Catalogue? catalogue) {
+//   if (catalogue == null) return null;
+
+//   if (catalogue.gender == 'all') {
+//     return 'UNISEX';
+//   } else if (catalogue.isPlusSize ?? false) {
+//     return 'PLUS SIZE';
+//   } else if (catalogue.isSustainable ?? false) {
+//     return 'SUSTAINABLE';
+//   } else if (catalogue.updatedAt != null &&
+//       catalogue.updatedAt!.between(
+//           DateTime.now().subtract(const Duration(days: 7)), DateTime.now())) {
+//     return 'NEW';
+//   }
+
+//   return null;
+// }
 
 extension IndianNumberFormatting on String {
   int get getIndexByAlphabet {

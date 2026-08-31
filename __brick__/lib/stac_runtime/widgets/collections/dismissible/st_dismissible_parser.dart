@@ -39,7 +39,7 @@ class StDismissibleParser extends StacParser<StDismissible> {
       if (model.onStartToEnd != null) {
         await Stac.onCallFromJson(model.onStartToEnd!.toJson(), context);
       }
-      return false;
+      return false; // snap back â€” this direction never removes the child
     }
 
     if (direction == DismissDirection.endToStart) {

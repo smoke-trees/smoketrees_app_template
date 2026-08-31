@@ -5,7 +5,7 @@ part 'st_main_button.g.dart';
 
 @JsonSerializable()
 class StMainButton extends StacWidget {
-  final String? actionKey; // legacy — prefer onPressed for new screens
+  final String? actionKey; // legacy â€” prefer onPressed for new screens
   final StacAction? onPressed;
   final String? title;
   final StacTextStyle? textStyle;

@@ -5,9 +5,15 @@ part 'counter_screen.g.dart';
 
 @JsonSerializable()
 class CounterScreen extends StacWidget {
-  const CounterScreen({this.title});
+  final String title;
+  final String description;
+  final int initialCount;
 
-  final String? title;
+  const CounterScreen({
+    required this.title,
+    required this.description,
+    required this.initialCount,
+  });
 
   @override
   String get type => 'counter_screen';

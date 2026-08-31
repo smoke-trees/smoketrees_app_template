@@ -3,6 +3,21 @@ import 'package:stac/stac_core.dart';
 
 part 'st_conditional_container.g.dart';
 
+/// Drop-in replacement for [StacContainer] wherever the decoration needs
+/// to switch based on a resolved field value. Every other field mirrors
+/// [StacContainer] exactly and is passed straight through unchanged.
+///
+/// ```json
+/// {
+///   "type": "conditional_container",
+///   "width": 44,
+///   "height": 44,
+///   "when": "{{completed}}",
+///   "decorationWhenTrue": { "shape": "circle", "color": "#9E9E9E66" },
+///   "decorationWhenFalse": { "shape": "circle", "gradient": {...} },
+///   "child": { "type": "center", "...": "..." }
+/// }
+/// ```
 @JsonSerializable(explicitToJson: true)
 class StConditionalContainer extends StacWidget {
   const StConditionalContainer({
@@ -21,7 +36,8 @@ class StConditionalContainer extends StacWidget {
   final double? height;
   final StacEdgeInsets? padding;
   final StacEdgeInsets? margin;
-  final StacAlignment? alignment;
+  final StacAlignment?
+  alignment; // matches StacContainer's alignment field/type
 
   final dynamic when;
   final StacBoxDecoration? decorationWhenTrue;

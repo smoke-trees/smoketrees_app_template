@@ -67,7 +67,7 @@ class App extends StatelessWidget {
     );
 
     return GetMaterialApp(
-      title: '{{app_name}}',
+      title: 'Stac Template',
       debugShowCheckedModeBanner: false,
       getPages: AppPages.pages,
       home: const StarterHomePage(),

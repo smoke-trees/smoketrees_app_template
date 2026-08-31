@@ -18,7 +18,7 @@ part 'st_list_view_builder.g.dart';
 /// {
 ///   "status": { "code": "200", "error": false },
 ///   "message": "Success in readMany",
-///   "result": [ { "id": "…", "title": "…", "...": "…" } ],
+///   "result": [ { "id": "â€¦", "title": "â€¦", "...": "â€¦" } ],
 ///   "count": 10
 /// }
 /// ```

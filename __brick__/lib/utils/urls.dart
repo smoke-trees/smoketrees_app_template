@@ -3,7 +3,7 @@
 import 'package:flutter/foundation.dart';
 
 class AppUrls {
-  // Unchanged — real backend, used by backendDio for everything non-Stac
+  // Unchanged â€” real backend, used by backendDio for everything non-Stac
   static String backendUrl = "http://192.168.1.17:8080";
 
   /// Only for Stac.initialize's baseUrl. Kept separate from backendUrl so
@@ -16,7 +16,7 @@ class AppUrls {
   static String get stacBaseUrl {
     /// Only redirect to the local dev server when actually launched by
     /// `stac watch` (which passes STAC_LOCAL_DEV=true). A plain `flutter
-    /// run` in debug mode should keep hitting the real backend — using
+    /// run` in debug mode should keep hitting the real backend â€” using
     /// kDebugMode here means EVERY debug run defaults to localhost:8090,
     /// even ones not started through stac watch.
 

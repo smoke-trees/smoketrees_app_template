@@ -1,3 +1,5 @@
+// st_conditional_widget.dart â€” model (renamed from last turn's `StConditional`
+// to avoid clashing with the utility above; JSON `type` string is unchanged)
 import 'package:json_annotation/json_annotation.dart';
 import 'package:stac/stac_core.dart';
 

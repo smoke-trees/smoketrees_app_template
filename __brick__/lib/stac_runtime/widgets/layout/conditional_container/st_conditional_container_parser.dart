@@ -18,6 +18,10 @@ class StConditionalContainerParser extends StacParser<StConditionalContainer> {
         ? model.decorationWhenTrue
         : model.decorationWhenFalse;
 
+    // Build a plain, package-native StacContainer with the resolved
+    // decoration, then hand off to the package's own parser via the
+    // registry â€” no package source touched, no Container(...) logic
+    // duplicated here.
     final container = StacContainer(
       width: model.width,
       height: model.height,

@@ -39,7 +39,9 @@ class _FadeInAnimationState extends State<FadeInAnimation>
 
     animation = Tween<double>(begin: 0, end: 1).animate(controller)
       ..addListener(() {
-        setState(() {});
+        setState(() {
+          // The state that has changed here is the animation objectâ€™s value.
+        });
       });
   }
 

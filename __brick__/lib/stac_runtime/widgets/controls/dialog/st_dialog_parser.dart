@@ -1,12 +1,13 @@
 import 'dart:ui' show SemanticsRole;
 
 import 'package:flutter/material.dart';
-import 'package:smoketrees_app_template/enums/st_enums/st_curves.dart';
-import 'package:smoketrees_app_template/enums/st_enums/st_semantics_role.dart';
+import 'package:{{project_name}}/enums/st_enums/st_curves.dart';
+import 'package:{{project_name}}/enums/st_enums/st_semantics_role.dart';
 import 'package:stac/stac.dart';
 
 import 'st_dialog.dart';
 
+/// Parser for [StDialog] that maps the Stac model onto Flutter's [Dialog].
 class StDialogParser extends StacParser<StDialog> {
   const StDialogParser();
 
@@ -39,6 +40,7 @@ class StDialogParser extends StacParser<StDialog> {
     );
   }
 
+  /// Maps the pure-Dart [StCurves] (DSL-safe) back to Flutter's [Curves].
   Curve _toCurve(StCurves? curve) {
     switch (curve) {
       case StCurves.bounceIn:
@@ -132,6 +134,8 @@ class StDialogParser extends StacParser<StDialog> {
     }
   }
 
+  /// Maps the pure-Dart [StSemanticsRole] (DSL-safe) back to Flutter's
+  /// [SemanticsRole] at render time.
   SemanticsRole _toSemanticsRole(StSemanticsRole role) {
     switch (role) {
       case StSemanticsRole.none:

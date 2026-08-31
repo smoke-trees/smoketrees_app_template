@@ -4,6 +4,7 @@ class MakeSlideAnimation extends StatefulWidget {
   const MakeSlideAnimation({
     Key? key,
     required this.child,
+
     this.reverse = false,
     this.duration = const Duration(milliseconds: 500),
     this.curve = Curves.linear,

@@ -87,6 +87,7 @@ class _ZoomableImageState extends State<ZoomableImage>
     double scale = _transformationController.value.getMaxScaleOnAxis();
 
     if (scale < 2.0) {
+      // If we are not at a 2x scale yet, zoom in all the way to 2x.
       final position = _doubleTapDetails.localPosition;
       final begin = _transformationController.value;
       final end = Matrix4.identity()
@@ -96,6 +97,7 @@ class _ZoomableImageState extends State<ZoomableImage>
       _updateDoubleTapAnimation(begin, end);
       _animationController.forward(from: 0.0);
     } else {
+      // If we are zoomed in at 2x or more, zoom all the way out
       final begin = Matrix4.identity();
       final end = _transformationController.value;
 

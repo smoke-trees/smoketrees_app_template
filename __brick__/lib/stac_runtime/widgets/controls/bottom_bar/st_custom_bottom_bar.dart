@@ -8,7 +8,8 @@ class StCustomBottomBar extends StacWidget {
   final List<String> labels;
   final List<String> svgIcons;
   final List<String> svgFilledIcons;
-  final int? specialIndex;
+  final int?
+  specialIndex; // optional index (e.g. 3) that gets the special stacked treatment
 
   const StCustomBottomBar({
     required this.labels,

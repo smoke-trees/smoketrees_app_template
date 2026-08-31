@@ -2,9 +2,9 @@ import 'package:stac/stac_core.dart';
 
 class StFutureData extends StacWidget {
   final String endpoint;
-  final Map<String, dynamic>? loadingWidget;
+  final Map<String, dynamic>? loadingWidget; // raw JSON, resolved recursively
   final Map<String, dynamic>? errorWidget;
-  final Map<String, dynamic> childTemplate;
+  final Map<String, dynamic> childTemplate; // raw JSON with {{placeholders}}
 
   const StFutureData({
     required this.endpoint,

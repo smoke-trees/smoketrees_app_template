@@ -36,7 +36,7 @@ class StMaterial extends StacWidget {
   });
 
   /// Maps to [Material.type]. Uses the pure-Dart [StacMaterialType] enum
-  /// (canvas, card, circle, button, transparency) — serialized as a plain
+  /// (canvas, card, circle, button, transparency) â€” serialized as a plain
   /// string by json_serializable, then mapped back to Flutter's
   /// [MaterialType] by `StMaterialParser` at render time.
   final StacMaterialType materialType;
