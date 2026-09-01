@@ -206,5 +206,27 @@ class _AppState extends State<App> {
     //     opaque: true,
     //   ),
     // );
+
+//     make mason brick template compatible with for ios there our some issues i faced 
+// An error occurred when adding Swift Package Manager integration:
+//   Error: Unable to get Xcode project information:
+//  2026-09-01 17:34:57.419 xcodebuild[72030:405889] Writing error result bundle to /var/folders/bb/q8rmlwq163bdlcx_bz59241m0000gn/T/ResultBundle_2026-01-09_17-34-0057.xcresult
+// xcodebuild: error: Could not resolve package dependencies:
+//   Failed to resolve dependencies Dependencies could not be resolved because no versions of 'firebase-ios-sdk' match the requirement 12.18.0 and 'firebase_core-4.14.0' depends on 'firebase-ios-sdk' 12.18.0.
+
+
+
+// Swift Package Manager is currently an experimental feature, please file a bug at
+//   https://github.com/flutter/flutter/issues/new?template=01_activation.yml 
+// Consider including a copy of the following files in your bug report:
+//   ios/Runner.xcodeproj/project.pbxproj
+//   ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme (or the scheme for the flavor used)
+
+// To add Swift Package Manager integration manually, please use the following instructions:
+// https://docs.flutter.dev/to/add-swift-package-manager-manually
+
+// You can also disable Swift Package Manager for the project by following these instructions:
+//   https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers#how-to-turn-off-swift-package-manager
+// Disabling Swift Package Manager will not be allowed in a future version of Flutter.  make sure when new developer use this template he shouldnt face any problems
   }
 }
