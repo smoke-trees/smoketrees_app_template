@@ -158,7 +158,6 @@ class _AppState extends State<App> {
 
     return StacApp(
       title: 'Stac App Test',
-      homeBuilder: (p0) => Stac(routeName: 'splash_page'),
       routes: AppPages.stacPages,
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true,

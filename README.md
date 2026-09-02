@@ -1,6 +1,16 @@
 # smoketrees_app_template
 
-A **Stac** (Server-Driven UI) Flutter template. Reusable common widgets live in `lib/shared/`; the reference application and server-driven screen DSL are kept separate from the reusable package layer.
+A **Stac** (Server-Driven UI) Flutter template that adds server-driven capabilities to your Flutter apps. Reusable common widgets live in `lib/shared/`; the reference application and server-driven screen DSL are kept separate from the reusable package layer.
+
+## Getting Started
+
+**Recommended approach**: Create your Flutter project first with `flutter create`, then add this Stac template to it. This preserves your platform-specific configurations and gives you full control over native setup.
+
+**Alternative**: Let Mason generate everything from scratch, including platform folders with pre-configured bundle IDs.
+
+Both workflows are supported - choose what fits your needs.
+
+---
 
 This README is written as a **navigation guide**: if you're new to this repo, read it top to bottom once, then use the [map](#map-where-do-i-go-for-x) as a lookup whenever you're not sure which folder or file a change belongs in. The goal is that by the end, you can take this template and ship your own SDUI application without guessing.
 
@@ -8,39 +18,115 @@ This README is written as a **navigation guide**: if you're new to this repo, re
 
 ## Mason Installation (Quick Start)
 
-Use [Mason](https://docs.brickhub.dev) to generate a new project from this template with one command.
+Use [Mason](https://docs.brickhub.dev) to add Stac to your Flutter project. This template supports two workflows:
 
-### 1. Install Mason CLI
+1. **Recommended**: Add to an existing Flutter project (keeps your platform-specific configurations)
+2. **Alternative**: Generate a complete new project from scratch
+
+### Prerequisites
 
 ```bash
+# Install Mason CLI globally
 dart pub global activate mason_cli
 ```
 
-### 2. Initialize Mason
+---
+
+## Workflow 1: Add to Existing Flutter Project (Recommended)
+
+This is the recommended approach as it preserves your existing Flutter project structure, platform configurations, and any custom native code you may have.
+
+### Step 1: Create a Flutter Project
+
+```bash
+flutter create my_app
+cd my_app
+```
+
+### Step 2: Initialize Mason in Your Project
 
 ```bash
 mason init
 ```
 
-### 3. Add the Brick
-
-**Local (if you have the repo cloned):**
-```bash
-mason add smoketrees_app --path "C:\smoketrees\app\smoketrees_app_template"
-```
+### Step 3: Add the Stac Template Brick
 
 **From GitHub:**
 ```bash
 mason add smoketrees_app --git-url https://github.com/smoke-trees/smoketrees_app_template.git
 ```
 
-### 4. Generate Your Project
-
+**Or Local (if you have the repo cloned):**
 ```bash
-mason make smoketrees_app --project_name my_app --organization com.example --app_name "My App"
+mason add smoketrees_app --path "/path/to/smoketrees_app_template"
 ```
 
-### 5. Start Development
+### Step 4: Generate Stac Files
+
+```bash
+mason make smoketrees_app --project_name my_app
+```
+
+This will:
+- Add the Stac infrastructure (`lib/stac_runtime/`, `stac/` folder)
+- Add core setup files (`lib/core/`, `lib/features/`, `lib/shared/`)
+- Add custom parsers and action handlers
+- Add configuration files and utilities
+- Install dependencies via `flutter pub get`
+- Run code generation (`build_runner`)
+- Compile initial Stac screens
+- **Remove the template's platform folders** (you'll use your existing ones)
+
+### Step 5: Start Development
+
+```bash
+stac watch  # Terminal 1 - watches for Stac DSL changes
+flutter run # Terminal 2 - runs your Flutter app
+```
+
+---
+
+## Workflow 2: Generate Complete Project from Scratch
+
+If you don't have an existing Flutter project or want Mason to handle the complete setup including platform folders, use this workflow.
+
+### Step 1: Initialize Mason
+
+```bash
+mason init
+```
+
+### Step 2: Add the Stac Template Brick
+
+**From GitHub:**
+```bash
+mason add smoketrees_app --git-url https://github.com/smoke-trees/smoketrees_app_template.git
+```
+
+**Or Local (if you have the repo cloned):**
+```bash
+mason add smoketrees_app --path "/path/to/smoketrees_app_template"
+```
+
+### Step 3: Generate Complete Project
+
+```bash
+mason make smoketrees_app \
+  --project_name my_app \
+  --generate_platform_folders true \
+  --organization com.example \
+  --app_name "My App"
+```
+
+This will:
+- Generate a complete Flutter project with all platform folders (android, ios, web, windows, macos, linux)
+- Configure Android package structure with your organization and project name
+- Configure iOS bundle identifiers
+- Set up the Stac infrastructure
+- Install dependencies and run code generation
+- **Keep all platform folders** intact with proper configurations
+
+### Step 4: Navigate and Start Development
 
 ```bash
 cd my_app
@@ -48,29 +134,100 @@ stac watch  # Terminal 1
 flutter run # Terminal 2
 ```
 
-### Generation Options
+---
 
+## What Gets Generated?
+
+Both workflows add the following to your project:
+
+- **`lib/stac_runtime/`** - Stac parsers, widgets, and action handlers
+- **`lib/shared/`** - Reusable Flutter widgets (non-server-driven)
+- **`lib/core/`** - Networking, storage, auth patterns
+- **`lib/features/`** - Reference app screens (splash, auth, bottom navigation)
+- **`stac/`** - Stac DSL files and compiled JSON screens
+- **`create_stac_parser.dart`** - CLI tool to scaffold new Stac parsers
+- **`create_stac_action.dart`** - CLI tool to scaffold new Stac actions
+
+**Key Difference:**
+- **Workflow 1**: Platform folders (`android/`, `ios/`, etc.) are removed - you use your existing ones
+- **Workflow 2**: Platform folders are generated and configured with your bundle IDs
+
+---
+
+## Which Workflow Should I Choose?
+
+| Consideration | Workflow 1: Add to Existing | Workflow 2: Generate Complete |
+|---------------|------------------------------|-------------------------------|
+| **Use when** | You already have a Flutter project | Starting from scratch |
+| **Best for** | Existing apps, custom native code | New projects, quick prototypes |
+| **Platform setup** | You manage it (existing folders) | Mason manages it (generates folders) |
+| **Bundle IDs** | Already configured by you | Configured via Mason variables |
+| **Native code** | Preserved (custom MainActivity, AppDelegate, etc.) | Standard Flutter template |
+| **Flexibility** | Full control over platform configs | Quick setup, less configuration |
+| **Recommended?** | ✅ Yes - more control | Use if you don't have a project yet |
+
+**Bottom line**: If you have any doubt, use Workflow 1. You can always start fresh with `flutter create` if needed.
+
+---
+
+## Configuration Options
+
+You can customize the template generation with these variables:
+
+### Common Options (Both Workflows)
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `project_name` | `my_stac_app` | Dart package name (snake_case). Used for pubspec.yaml name and imports |
+| `description` | `A Stac-powered Flutter application` | Short description for pubspec.yaml |
+| `include_example_screens` | `false` | Include reference screens (splash, sign_in, counter, auth) |
+| `include_network_layer` | `true` | Include Dio networking, auth interceptors, and backend integration |
+| `include_firebase` | `false` | Add Firebase messaging and local notifications dependencies |
+
+### Workflow Selection
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `generate_platform_folders` | `false` | **Workflow switch**: `false` = add to existing project (Workflow 1), `true` = generate complete project (Workflow 2) |
+
+### Workflow 2 Only (Complete Project Generation)
+
+These options are only used when `generate_platform_folders=true`:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `organization` | `com.example` | Organization identifier in reverse-domain format (e.g., com.smoketrees). Used for Android applicationId and iOS bundle identifier |
+| `app_name` | `My Stac App` | Human-readable app display name. Used for iOS CFBundleDisplayName and Android app label |
+| `platforms` | `[android, ios, web]` | Target platforms to generate. Available: android, ios, web, windows, macos, linux |
+
+### Example Commands
+
+**Minimal (Workflow 1 - Recommended):**
+```bash
+mason make smoketrees_app --project_name my_app
+```
+
+**With optional features (Workflow 1):**
+```bash
+mason make smoketrees_app \
+  --project_name my_app \
+  --include_example_screens true \
+  --include_firebase true
+```
+
+**Complete project with all options (Workflow 2):**
 ```bash
 mason make smoketrees_app \
   --project_name health_app \
+  --generate_platform_folders true \
   --organization com.mycompany \
   --app_name "Health Tracker" \
-  --description "Track your daily health" \
+  --description "Track your daily health metrics" \
   --include_example_screens true \
   --include_network_layer true \
   --include_firebase false \
   --platforms android ios web
 ```
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `project_name` | `my_stac_app` | Dart package name (snake_case) |
-| `organization` | `com.example` | Android/iOS bundle ID |
-| `app_name` | `My Stac App` | Display name on all platforms |
-| `include_example_screens` | `false` | Include demo screens |
-| `include_network_layer` | `true` | Include Dio networking setup |
-| `include_firebase` | `false` | Add Firebase dependencies |
-| `platforms` | `android ios web` | Target platforms |
 
 ---
 
