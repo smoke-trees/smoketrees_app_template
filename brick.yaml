@@ -1,5 +1,5 @@
 name: smoketrees_app
-description: A Stac (Server-Driven UI) Flutter application template with reusable widgets, custom parsers, actions, networking, storage, and theming infrastructure. Add to existing Flutter projects or generate complete projects with platform folders.
+description: A Stac (Server-Driven UI) Flutter application template with reusable widgets, custom parsers, actions, networking, storage, and theming infrastructure. Add Stac capabilities to your existing Flutter projects.
 version: 1.0.0
 
 environment:
@@ -10,27 +10,9 @@ repository: https://github.com/smoke-trees/st_sdui
 vars:
   project_name:
     type: string
-    description: "Dart package name in snake_case (e.g., health_habits, stac_cart_demo). Used for: pubspec.yaml name, Dart imports, Android package namespace"
+    description: "Dart package name in snake_case (e.g., health_habits, stac_cart_demo). Used for: pubspec.yaml name and Dart imports"
     prompt: Project name (snake_case)
     default: my_stac_app
-  
-  generate_platform_folders:
-    type: boolean
-    description: "Generate complete Flutter project with platform folders (android, ios, web, etc). Set to false if adding to an existing Flutter project. When true, also configure organization and app_name variables"
-    prompt: Generate platform folders?
-    default: false
-    
-  organization:
-    type: string
-    description: "Organization identifier in reverse-domain format (e.g., com.smoketrees, com.example). Used for: Android applicationId, iOS PRODUCT_BUNDLE_IDENTIFIER. Only used when generate_platform_folders is true"
-    prompt: Organization (reverse-domain, e.g., com.company)
-    default: com.example
-    
-  app_name:
-    type: string
-    description: "Human-readable app display name (e.g., Health Habits, Stac Cart Demo). Used for: iOS CFBundleDisplayName, Android app label, pubspec description. Only used when generate_platform_folders is true"
-    prompt: App display name
-    default: My Stac App
     
   description:
     type: string
@@ -55,16 +37,3 @@ vars:
     description: "Include Firebase messaging and local notifications dependencies in pubspec.yaml"
     prompt: Include Firebase?
     default: false
-    
-  platforms:
-    type: array
-    description: "Target platforms to include native project files for when generate_platform_folders is true. Selected platforms will have Android, iOS, web, or desktop configurations generated"
-    prompt: Target platforms (only if generate_platform_folders=true)
-    default: [android, ios, web]
-    values:
-      - android
-      - ios
-      - web
-      - windows
-      - macos
-      - linux

@@ -1,4 +1,0 @@
-#include "Generated.xcconfig"
-
-// Disable experimental Swift Package Manager integration
-SWIFT_PACKAGE_MANAGER_ENABLED=NO
