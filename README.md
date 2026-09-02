@@ -54,9 +54,23 @@ mason add smoketrees_app --path "/path/to/smoketrees_app_template"
 
 ### Step 4: Generate Stac Files
 
+Run the Mason generation command:
+
 ```bash
-mason make smoketrees_app --project_name my_app
+mason make smoketrees_app
 ```
+
+Mason will **interactively prompt you** for configuration options:
+
+```bash
+Project name (snake_case) (my_stac_app): my_app
+App description (A Stac-powered Flutter application): ↵
+Include example screens? (false): ↵
+Include network layer? (true): ↵
+Include Firebase? (false): ↵
+```
+
+Press **Enter** to accept default values or type your custom value.
 
 This will:
 - ✅ Add the Stac infrastructure (`lib/stac_runtime/`, `stac/` folder)
@@ -125,45 +139,46 @@ This template adds the following to your existing Flutter project:
 
 ## Configuration Options
 
-You can customize the template generation with these variables:
+When you run the generation command, Mason will **interactively prompt you** for each configuration option:
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `project_name` | `my_stac_app` | Dart package name (snake_case). Used for pubspec.yaml name and imports |
-| `description` | `A Stac-powered Flutter application` | Short description for pubspec.yaml |
-| `include_example_screens` | `false` | Include reference screens (splash, sign_in, counter, auth) for learning |
-| `include_network_layer` | `true` | Include Dio networking, auth interceptors, and backend integration |
-| `include_firebase` | `false` | Add Firebase messaging and local notifications dependencies |
-
-### Example Commands
-
-**Minimal setup:**
 ```bash
-mason make smoketrees_app --project_name my_app
+mason make smoketrees_app
 ```
 
-**With example screens for learning:**
+You'll be asked:
+
+1. **Project name (snake_case)** - Your Dart package name (e.g., `my_app`, `health_tracker`)
+2. **App description** - Short description for pubspec.yaml
+3. **Include example screens?** - Reference screens for learning (splash, sign_in, counter, auth)
+4. **Include network layer?** - Dio networking, auth interceptors, and backend integration
+5. **Include Firebase?** - Firebase messaging and local notifications dependencies
+
+### Interactive Example
+
 ```bash
-mason make smoketrees_app \
-  --project_name my_app \
-  --include_example_screens true
+$ mason make smoketrees_app
+
+Project name (snake_case) (my_stac_app): my_app
+App description (A Stac-powered Flutter application): My awesome Stac app
+Include example screens? (false): true
+Include network layer? (true): true
+Include Firebase? (false): false
+
+🔧 Running post-generation setup...
+✓ Stac template added successfully!
 ```
 
-**With Firebase support:**
-```bash
-mason make smoketrees_app \
-  --project_name my_app \
-  --include_example_screens true \
-  --include_firebase true \
-  --description "My awesome Stac-powered app"
-```
+### Available Options
 
-**Minimal setup (no networking):**
-```bash
-mason make smoketrees_app \
-  --project_name my_app \
-  --include_network_layer false
-```
+| Prompt | Default | Purpose |
+|--------|---------|---------|
+| Project name (snake_case) | `my_stac_app` | Dart package name for pubspec.yaml and imports |
+| App description | `A Stac-powered Flutter application` | Short description for pubspec.yaml |
+| Include example screens? | `false` | Reference screens (splash, sign_in, counter, auth) for learning |
+| Include network layer? | `true` | Dio networking, auth interceptors, and backend integration |
+| Include Firebase? | `false` | Firebase messaging and local notifications dependencies |
+
+**Tip**: Press Enter to accept the default value shown in parentheses.
 
 ---
 
