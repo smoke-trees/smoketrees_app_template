@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:{{project_name}}/smoketrees_app_template.dart';
+import 'package:{{project_name.snakeCase()}}/{{project_name.snakeCase()}}.dart';
 import 'package:stac/stac.dart';
 
 /// Plain Dio instance — replace with your own instance/interceptors once you

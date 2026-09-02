@@ -97,7 +97,7 @@ class $actionParser extends StacActionParser<$action> {
 ''');
 
   _insertAfter(
-    File(_join(['lib', 'smoketrees_app_template.dart'])),
+    File(_join(['lib', '{{project_name.snakeCase()}}.dart'])),
     "export 'stac_runtime/actions/wildcard_page_nav/st_wildcard_page_nav_parser.dart';",
     ["export '$packagePath.dart';", "export '${packagePath}_parser.dart';"],
   );

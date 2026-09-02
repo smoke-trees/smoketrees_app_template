@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smoketrees_app_template/theme/colors.dart';
+import 'package:{{project_name.snakeCase()}}/theme/colors.dart';
 
 import '../../utils/utils.dart';
 import '../../stac_runtime/widgets/controls/main_button/main_button.dart';

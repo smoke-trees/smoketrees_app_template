@@ -40,7 +40,7 @@ void _setupAndroidPackage(HookContext context, String organization, String proje
 
     // Remove the placeholder directory if it exists
     final placeholderDir = Directory(
-      'android/app/src/main/kotlin/com/example/placeholder',
+      'android/app/src/main/kotlin/com/example/smoketrees_app_template',
     );
 
     if (placeholderDir.existsSync()) {
@@ -65,7 +65,7 @@ class MainActivity : FlutterActivity()
     context.logger.success('✓ Android package structure configured');
   } catch (e) {
     context.logger.err('✗ Android setup failed: $e');
-    context.logger.warn('  You may need to manually move android/app/src/main/kotlin/com/example/placeholder/MainActivity.kt');
+    context.logger.warn('  You may need to manually move android/app/src/main/kotlin/com/example/smoketrees_app_template/MainActivity.kt');
   }
 }
 

@@ -94,7 +94,7 @@ class ${name}Parser extends StacParser<$name> {
 ''');
 
   _insertAfter(
-    File(_join(['lib', 'smoketrees_app_template.dart'])),
+    File(_join(['lib', '{{project_name.snakeCase()}}.dart'])),
     "export 'stac_runtime/widgets/layout/wildcard_page/wildcard_page_parser.dart';",
     ["export '$packagePath.dart';", "export '${packagePath}_parser.dart';"],
   );

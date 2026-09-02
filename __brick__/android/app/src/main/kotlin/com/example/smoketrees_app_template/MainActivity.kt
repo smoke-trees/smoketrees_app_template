@@ -1,4 +1,4 @@
-package com.example.smoketrees_app_template
+package {{organization.dotCase()}}.{{project_name.snakeCase()}}
 
 import io.flutter.embedding.android.FlutterActivity
 

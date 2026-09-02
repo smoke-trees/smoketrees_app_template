@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.smoketrees_app_template"
+    namespace = "{{organization.dotCase()}}.{{project_name.snakeCase()}}"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.smoketrees_app_template"
+        applicationId = "{{organization.dotCase()}}.{{project_name.snakeCase()}}"
 
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion

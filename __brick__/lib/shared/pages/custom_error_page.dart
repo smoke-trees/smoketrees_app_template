@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:smoketrees_app_template/theme/colors.dart';
+import 'package:{{project_name.snakeCase()}}/theme/colors.dart';
 
 
 class CustomErrorPage extends StatelessWidget {
