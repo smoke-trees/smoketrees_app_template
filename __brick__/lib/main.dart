@@ -170,56 +170,5 @@ class _AppState extends State<App> {
         return null;
       },
     );
-
-    // return GetMaterialApp(
-    //   builder: (context, child) {
-    //     return MediaQuery(
-    //       data: MediaQuery.of(context).copyWith(
-    //         textScaler: const TextScaler.linear(1.0),
-    //         devicePixelRatio: 1.0,
-    //       ),
-    //       child: AppUpdateChecker(child: child!),
-    //     );
-    //   },
-    //   title: 'FOMO',
-    //   enableLog: true,
-    //   useInheritedMediaQuery: true,
-    //   debugShowCheckedModeBanner: false,
-    //   initialBinding: InitBindings(),
-    //   theme: Themes.theme,
-    //   themeMode: ThemeMode.light,
-    //   textDirection: TextDirection.ltr,
-    //   getPages: AppPages.pages,
-    //   onGenerateRoute: (settings) {
-    //     log('name ${settings.name}');
-    //     print('Route settings: ${settings.name}');
-    //     return null;
-    //   },
-    //   initialRoute: 'hello_world',
-    //   // navigatorObservers: [AnalyticsService.observer],
-    //   onUnknownRoute: (RouteSettings settings) {
-    //     if (kDebugMode) {
-    //       print("Unknown route: ${settings.name}");
-    //     }
-    //     // AppLinks(). getInitialLink().then((value) => print("Initial link: $value"));
-    //     return GetPageRoute(
-    //       settings: settings,
-    //       page: () => const SplashPage(),
-    //       opaque: true,
-    //     );
-    //   },
-    //   unknownRoute: GetPage(
-    //     name: SplashPage.routeName,
-    //     page: () => const SplashPage(),
-    //     opaque: true,
-    //   ),
-    // );
-
-    //     make mason brick template compatible with for ios there our some issues i faced
-    // An error occurred when adding Swift Package Manager integration:
-    //   Error: Unable to get Xcode project information:
-    //  2026-09-01 17:34:57.419 xcodebuild[72030:405889] Writing error result bundle to /var/folders/bb/q8rmlwq163bdlcx_bz59241m0000gn/T/ResultBundle_2026-01-09_17-34-0057.xcresult
-    // xcodebuild: error: Could not resolve package dependencies:
-    //   Failed to resolve dependencies Dependencies could not be resolved because no versions of 'firebase-ios-sdk' match the requirement 12.18.0 and 'firebase_core-4.14.0' depends on 'firebase-ios-sdk' 12.18.0.
   }
 }
