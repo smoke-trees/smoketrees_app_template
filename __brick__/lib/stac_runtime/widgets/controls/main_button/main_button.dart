@@ -17,7 +17,7 @@ class MainButton extends StatefulWidget {
   final BorderSide? borderSide;
 
   const MainButton({
-    Key? key,
+    super.key,
     required this.onTap,
     this.disabled = false,
     this.showLoader = false,
@@ -32,7 +32,7 @@ class MainButton extends StatefulWidget {
     this.borderSide,
     this.loadingColor = Colors.white,
     this.fontSize,
-  }) : super(key: key);
+  });
 
   @override
   State<MainButton> createState() => _MainButtonState();

@@ -43,7 +43,8 @@ class StDataRefreshController extends GetxController {
   void notifyItemUpdated(dynamic key, Map<String, dynamic> fields) =>
       _changes.add(StDataItemUpdated(key, fields));
 
-  void notifyItemDeleted(dynamic key) => _changes.add(StDataItemDeleted(key));
+  void notifyItemDeleted(dynamic key) =>
+      _changes.add(StDataItemDeleted(key));
 
   void notifyListChanged() => _changes.add(const StDataListReset());
 }
