@@ -237,6 +237,7 @@ A quick-reference table for common tasks. Each row links to a fuller section fur
 | Add a time-boxed page (sale banner, campaign, one-off announcement) **without a new app release** | Add it to `WildcardPageModel.children` | [Wildcard pages](#wildcard-pages-one-route-many-screens) |
 | Build a new reusable widget (server-driven) | `dart run create_stac_parser.dart <Name> [category]` | [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser) |
 | Build a data-injecting widget (with endpoint/items) | `dart run create_stac_parser.dart <Name> [category] --inject-data` | [Inject-data mode](#inject-data-mode) |
+| Build a data-injecting widget with action registry | `dart run create_stac_parser.dart <Name> [category] --inject-data` + `ActionRegistry.register()` | [Using ActionRegistry](#using-actionregistry-with-inject-data) |
 | Build a new reusable Flutter widget (not server-driven) | Add it under `lib/shared/` directly | [What this template provides](#what-this-template-provides) |
 | Add new tap/navigation behavior triggerable from JSON | `dart run create_stac_action.dart <Name> [category]` | [Custom Stac actions](#custom-stac-actions) |
 | Point the app at my backend | Reference app's URL configuration (`AppUrls.backendUrl`) | [Point the app at your backend](#first-time-setup-clone--run) |
@@ -870,6 +871,58 @@ The DSL can then use it like:
 ```
 
 Placeholders like `{{name}}` and `{{price}}` are replaced with values from the API response or inline `items` at runtime.
+
+#### Using ActionRegistry with inject-data
+
+The inject-data mode also supports fetching data from registered actions via `ActionRegistry`. This is useful when you have reusable data-fetching logic that returns `Map<String, dynamic>` or `List<Map<String, dynamic>>`.
+
+First, register your actions in `lib/stac_runtime/utils/action_registry.dart`:
+
+```dart
+import 'package:stac/stac.dart';
+
+ActionRegistry.register('fetch_user_profile', (context) async {
+  final dio = backendDio.dio;
+  final response = await dio.get('/api/user/profile');
+  return response.data as Map<String, dynamic>;
+});
+
+ActionRegistry.register('fetch_products', (context) async {
+  final dio = backendDio.dio;
+  final response = await dio.get('/api/products');
+  return (response.data as List).cast<Map<String, dynamic>>();
+});
+```
+
+Then use `actionKey` in the widget JSON instead of `endpoint`:
+
+```json
+{
+  "type": "st_user_card",
+  "actionKey": "fetch_user_profile",
+  "childTemplate": {
+    "type": "column",
+    "children": [
+      { "type": "text", "data": "{{name}}" },
+      { "type": "text", "data": "{{email}}" }
+    ]
+  },
+  "loadingWidget": { "type": "center", "child": { "type": "circularProgressIndicator" } },
+  "emptyWidget": { "type": "center", "child": { "type": "text", "data": "No profile found" } }
+}
+```
+
+The parser priority is: `actionKey` > `endpoint` > `items`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `endpoint` | `String?` | API endpoint to fetch data from |
+| `items` | `List<Map<String, dynamic>>?` | Inline item data |
+| `actionKey` | `String?` | Key of a registered action in `ActionRegistry` |
+| `childTemplate` | `Map<String, dynamic>` | Widget template with `{{key}}` placeholders |
+| `loadingWidget` | `Map<String, dynamic>?` | Widget shown while loading |
+| `errorWidget` | `Map<String, dynamic>?` | Widget shown on error |
+| `emptyWidget` | `Map<String, dynamic>?` | Widget shown when data is empty |
 
 ### Custom Stac actions
 
