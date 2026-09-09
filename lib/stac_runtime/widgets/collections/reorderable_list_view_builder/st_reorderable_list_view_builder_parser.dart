@@ -7,6 +7,7 @@ import 'package:smoketrees_app_template/core/controllers/st_data_refresh_control
 import 'package:stac/stac.dart';
 
 import '../../../../core/network/dio_controllers/backend_dio.dart';
+import '../../../utils/inject_data.dart';
 import 'st_reorderable_list_view_builder.dart';
 
 /// Replaces [ReorderableListView]'s default drag decorator, which wraps the
@@ -134,7 +135,7 @@ class StReorderableListViewBuilderParser
       'oldIndex': oldIndex,
       'newIndex': newIndex,
     };
-    final resolvedJson = _injectData(action.toJson(), placeholders);
+    final resolvedJson = injectData(action.toJson(), placeholders);
     await Stac.onCallFromJson(resolvedJson, context);
   }
 
@@ -153,7 +154,7 @@ class StReorderableListViewBuilderParser
   }) {
     final item = items[index];
     final itemWithIndex = <String, dynamic>{...item, 'index': index};
-    final resolvedJson = _injectData(
+    final resolvedJson = injectData(
       model.itemTemplate.toJson(),
       itemWithIndex,
     );
@@ -195,29 +196,6 @@ class StReorderableListViewBuilderParser
     return null;
   }
 
-  /// Deep-copies a JSON tree replacing `{{key}}` placeholders with values
-  /// from [data]. Scalar values are coerced to [String] so they can be safely
-  /// injected into string fields (e.g. `StacText.data`).
-  dynamic _injectData(dynamic node, Map<String, dynamic> data) {
-    if (node is String) {
-      final match = RegExp(r'^\{\{(\w+)\}\}$').firstMatch(node);
-      if (match != null) {
-        final value = data[match.group(1)];
-        return value == null ? node : value.toString();
-      }
-      return node.replaceAllMapped(
-        RegExp(r'\{\{(\w+)\}\}'),
-        (m) => data[m.group(1)]?.toString() ?? m.group(0)!,
-      );
-    }
-    if (node is Map<String, dynamic>) {
-      return node.map((k, v) => MapEntry(k, _injectData(v, data)));
-    }
-    if (node is List) {
-      return node.map((e) => _injectData(e, data)).toList();
-    }
-    return node;
-  }
 }
 
 /// Stateful page loader used when [StReorderableListViewBuilder.endpoint] is set.
