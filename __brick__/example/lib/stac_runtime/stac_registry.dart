@@ -37,6 +37,10 @@ class StacParsers {
     StConditionalContainerParser(),
     StMaterialParser(),
     WildcardPageParser(),
+    StDropdownButtonFormFieldParser(backendDio.dio),
+    StGenericDataListParser(backendDio.dio),
+    StReactiveWrapperParser(),
+    StProgressHeaderParser(),
   ];
   static final List<StacActionParser> actionParsers = [
     StacReorderToDoActionParser(),
