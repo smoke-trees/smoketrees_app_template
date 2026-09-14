@@ -1,0 +1,5 @@
+interface:
+  display_name: "Stac Codegen Tools"
+  short_description: "Use create_stac_parser.dart and create_stac_action.dart tools"
+  brand_color: "#9333EA"
+  default_prompt: "Use $stac-codegen-tools to scaffold custom Stac widgets and actions using the dart code generation tools."

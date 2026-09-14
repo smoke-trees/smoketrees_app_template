@@ -50,6 +50,26 @@ This repository **is the Mason brick** that adds Smoke Trees Stac (Server-Driven
 - Preserve JSON field names / parser `type` strings once shipped — breaking them breaks server payloads.
 - Follow existing navigation (`lib/app/app_pages.dart`, `lib/app/app_nav.dart`, `StWildcardPageNav` action) — no ad-hoc route handling.
 
+## Scaffolding Tools — `create_stac_parser.dart` & `create_stac_action.dart`
+
+Both live in repo root and `__brick__/` and are copied to the generated app root; after `mason make` run them from the app root. They set `Directory.current` to the script location so execution directory does not matter.
+
+- **`create_stac_parser.dart`** — `create_stac_parser.dart:1`
+  - Usage: `dart run create_stac_parser.dart <PascalCaseName> [category] [subdir...] [--inject-data]` — `name` must match `^[A-Z][A-Za-z0-9]*$`.
+  - `snake` + `type` derivation: `MyWidget` → `st_my_widget.dart` / `st_my_widget_parser.dart` / `st_my_widget.g.dart`, `type = 'st_my_widget'`.
+  - `category` defaults to `layout` when omitted; any extra positionals become nested subdirs. `dart run create_stac_parser.dart ProductCard collections` → `lib/stac_runtime/widgets/collections/product_card/...`. `category` is validated to reject `.`/`..`.
+  - Writes model + parser under `lib/stac_runtime/widgets/<category>/<snake>/`, then auto-patches `lib/smoketrees_app_template.dart` exports (after `wildcard_page_parser.dart`) and `lib/stac_runtime/stac_registry.dart` (`WildcardPageParser(),` anchor) via `_insertAfter`.
+  - `--inject-data` mode generates a data-injection parser: model has `endpoint`/`items`/`actionKey` + `childTemplate`/`loadingWidget`/`errorWidget`/`emptyWidget` with `{{key}}` placeholders; parser uses `Dio`, `ActionRegistry.call`, `inject_data.dart`, `Stac.fromJson` and `FutureBuilder` branches (`_buildWithAction` / `_buildWithEndpoint` / `_buildWithItems` / `_buildList`). Non-inject mode generates a simple `StacWidget? child` model and `SizedBox(child: model.child?.parse(context))` parser.
+  - Finally tries `fvm dart run build_runner build --delete-conflicting-outputs` (inherits stdio); if `fvm` missing, writes a placeholder `part of 'st_<snake>.dart';` and instructs to run `build_runner` manually. See `create_stac_parser.dart:357`.
+
+- **`create_stac_action.dart`** — `create_stac_action.dart:1`
+  - Usage: `dart run create_stac_action.dart <PascalCaseName> [category] [subdir...]` — no `--inject-data`.
+  - `SubmitOrder` → `st_submit_order_action.dart` / `st_submit_order_action_parser.dart` / `st_submit_order_action.g.dart` under `lib/stac_runtime/actions/<category>/<snake>/`, `actionType = 'snake_case'`.
+  - Generates `St<Action> extends StacAction` model (`st_<snake>_action.dart:61`) and `St<Action>Parser extends StacActionParser` (`st_<snake>_action_parser.dart:83`) with `getModel` + `onCall(BuildContext, model)` stub.
+  - Same auto-patching: exports in `lib/smoketrees_app_template.dart` (after `st_wildcard_page_nav_parser.dart`) and `lib/stac_runtime/stac_registry.dart` (`StWildcardPageNavActionParser(),` anchor), then same `fvm build_runner` attempt with placeholder fallback (`create_stac_action.dart:157`).
+
+Always verify the registry entry was inserted and run `dart run build_runner build --delete-conflicting-outputs` + `stac build` if the placeholder was written.
+
 ## Mason Rules
 
 - Keep `brick.yaml` vars compatible and defaults meaningful (`my_stac_app`, `false`/`true` flags).

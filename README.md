@@ -389,10 +389,20 @@ Example:
 dart run create_stac_action.dart SubmitOrder checkout
 ```
 
-The scripts create the model/parser files, update exports and registry entries, and run code generation when possible. After changing a serializable model, regenerate its `.g.dart` file:
+The scripts create the model/parser files, update exports and registry entries, and run code generation when possible:
+
+- **`create_stac_parser.dart`** (`create_stac_parser.dart:1`): `dart run create_stac_parser.dart <PascalCaseName> [category] [subdir...] [--inject-data]` — `Name` must match `^[A-Z][A-Za-z0-9]*$`. Derives `st_my_widget.dart` / `st_my_widget_parser.dart` / `st_my_widget.g.dart` (`type='st_my_widget'`) under `lib/stac_runtime/widgets/<category>/<snake>/` (`category` defaults to `layout`; extra args become nested subdirs; `.`/`..` rejected). Patches `lib/smoketrees_app_template.dart` (after `wildcard_page_parser.dart`) and `lib/stac_runtime/stac_registry.dart` (`WildcardPageParser(),` anchor) via `_insertAfter`. `--inject-data` generates a `Dio` + `ActionRegistry` + `inject_data.dart` parser with `endpoint`/`items`/`actionKey` and `childTemplate` `{{key}}` placeholders (`FutureBuilder` branches: `_buildWithAction`/`_buildWithEndpoint`/`_buildWithItems`/`_buildList`); without it generates a `StacWidget? child` model with `SizedBox(child: model.child?.parse(context))`. Tries `fvm dart run build_runner build --delete-conflicting-outputs` and falls back to a placeholder `part of 'st_<snake>.dart';` if `fvm` is missing (`create_stac_parser.dart:357`).
+
+- **`create_stac_action.dart`** (`create_stac_action.dart:1`): `dart run create_stac_action.dart <PascalCaseName> [category] [subdir...]` — no `--inject-data`. `SubmitOrder` → `st_submit_order_action.dart` / `st_submit_order_action_parser.dart` / `st_submit_order_action.g.dart` under `lib/stac_runtime/actions/<category>/<snake>/` (`actionType='snake_case'`). Generates `St<Name>Action extends StacAction` and `St<Name>ActionParser extends StacActionParser` with `getModel` + `onCall(BuildContext, model)` stub, patches `lib/smoketrees_app_template.dart` (after `st_wildcard_page_nav_parser.dart`) and `lib/stac_runtime/stac_registry.dart` (`StWildcardPageNavActionParser(),` anchor), then same `fvm build_runner` attempt (`create_stac_action.dart:157`).
+
+- **Mason hooks** (`hooks/pre_gen/hook.dart`, `hooks/post_gen/hook.dart`): `mason make` runs `post_gen` which executes `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs`, and `stac build` automatically (see `hooks/post_gen/hook.dart:1`).
+
+Always verify the `stac_registry.dart` entry was inserted. After changing a serializable model, regenerate its `.g.dart` file:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
+# or with FVM (used by the scaffolders):
+fvm dart run build_runner build --delete-conflicting-outputs
 ```
 
 Every custom parser and action parser must be included in the lists passed to `Stac.initialize`. Exporting a parser is not sufficient by itself; confirm its registration in `lib/stac_runtime/stac_registry.dart`.
