@@ -21,6 +21,10 @@ class StacParsers {
     StFutureDataParser(_dio),
     StListViewBuilderParser(_dio),
     WildcardPageParser(),
+    StDropdownButtonFormFieldParser(_dio),
+    StGenericDataListParser(_dio),
+    StReactiveWrapperParser(),
+    StProgressHeaderParser(),
   ];
 
   static final List<StacActionParser> actionParsers = [
