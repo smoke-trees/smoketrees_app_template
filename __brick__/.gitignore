@@ -34,6 +34,30 @@ migrate_working_dir/
 /build/
 /coverage/
 .agents
+!.agents/
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/grill-me/
+!.agents/skills/grill-me/SKILL.md
+!.agents/skills/grill-me/agents/
+!.agents/skills/grill-me/agents/openai.yaml
+!.agents/skills/grill-with-docs/
+!.agents/skills/grill-with-docs/SKILL.md
+!.agents/skills/grill-with-docs/agents/
+!.agents/skills/grill-with-docs/agents/openai.yaml
+!.agents/skills/grilling/
+!.agents/skills/grilling/SKILL.md
+!.agents/skills/grilling/agents/
+!.agents/skills/grilling/agents/openai.yaml
+.claude/
+!.claude/
+!.claude/skills/
+!.claude/skills/grill-me/
+!.claude/skills/grill-me/SKILL.md
+!.claude/skills/grill-with-docs/
+!.claude/skills/grill-with-docs/SKILL.md
+!.claude/skills/grilling/
+!.claude/skills/grilling/SKILL.md
 stac.exe
 
 # Symbolication related
@@ -50,5 +74,6 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 skills-lock.json
+!skills-lock.json
 stac_cli/CHANGELOG.md
 .stac/
