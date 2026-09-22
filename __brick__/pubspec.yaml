@@ -34,6 +34,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   get:
+  get_storage:
+  equatable:
   shimmer: ^3.0.0
   dio: 5.10.0
   hive_flutter:
@@ -75,30 +77,12 @@ dependencies:
   stac:
     git:
       url: https://github.com/smoke-trees/st_sdui.git
-      ref: main
+      ref: main 
       path: packages/stac
+
   # stac_core: ^1.5.0
   json_annotation: ^4.9.0
   mason: ^0.1.2
-
-dependency_overrides:
-  stac_core:
-    git:
-      url: https://github.com/smoke-trees/st_sdui.git
-      ref: main
-      path: packages/stac_core
-
-  stac_framework:
-    git:
-      url: https://github.com/smoke-trees/st_sdui.git
-      ref: main
-      path: packages/stac_framework
-
-  stac_logger:
-    git:
-      url: https://github.com/smoke-trees/st_sdui.git
-      ref: main
-      path: packages/stac_logger
 
 dev_dependencies:
   flutter_test:
@@ -161,4 +145,3 @@ flutter:
     - assets/svgs/tabs/
     - assets/images/
     - assets/lotties/
-
