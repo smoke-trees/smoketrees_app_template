@@ -86,8 +86,7 @@ This will:
 ### Step 5: Start Development
 
 ```bash
-stac watch  # Terminal 1 - watches for Stac DSL changes
-flutter run # Terminal 2 - runs your Flutter app
+stac watch  # Builds/watches the DSL, serves JSON through Tailscale Funnel, and launches the debug app
 ```
 
 ---
@@ -191,6 +190,8 @@ Include Firebase? (false): false
 - [Your path from template to shipped app](#your-path-from-template-to-shipped-app)
 - [Prerequisites](#prerequisites)
 - [Stac package sources](#stac-package-sources)
+- [Responsive widgets](#responsive-widgets)
+- [Local development with Tailscale Funnel](#local-development-with-tailscale-funnel)
 - [First-time setup (clone → run)](#first-time-setup-clone--run)
 - [Daily loop: the watch session](#daily-loop-the-watch-session)
 - [Key commands: `r`, `R`, `q`](#key-commands-r-r-q)
@@ -201,7 +202,7 @@ Include Firebase? (false): false
 - [Scaffolding a custom Stac parser](#scaffolding-a-custom-stac-parser)
 - [Custom Stac actions](#custom-stac-actions)
 - [Wildcard pages: one route, many screens](#wildcard-pages-one-route-many-screens)
-- [Runtime routing: `AppUrls` and `STAC_LOCAL_DEV`](#runtime-routing-appurls-and-stac_local_dev)
+- [Runtime routing: `AppUrls` and `STAC_DEV_BASE_URL`](#runtime-routing-appurls-and-stac_dev_base_url)
 - [CLI reference](#cli-reference)
 - [Gotchas & sharp edges](#gotchas--sharp-edges)
 
@@ -349,6 +350,7 @@ Screen/theme JSON currently only builds locally (`stac build` → `stac/.build/`
 | **Flutter 3.44.0** | Pinned by `.fvmrc`. Install via FVM: `fvm use` or `fvm install`. A plain Flutter SDK on your `PATH` also works, but FVM keeps every `flutter`/`dart` call on the pinned version. |
 | **Dart SDK** | Ships with Flutter; the CLI targets `^3.8.1`. |
 | **A backend** | The app talks to a real backend over HTTP for data (auth, to-dos, settings). There is no mock backend in this repo — only screen/theme JSON is served locally. |
+| **Tailscale** | Required on the development computer for `stac watch`/`stac server` Funnel access. Android and iOS test devices only need internet access. See [Local development with Tailscale Funnel](#local-development-with-tailscale-funnel). |
 | **A device or emulator** | Needed for the watch session's auto-launch. `flutter devices` to list them. |
 
 ## Stac package sources
@@ -385,12 +387,12 @@ dependency_overrides:
 
 The entries have different roles:
 
-- `stac` is the package used directly by the application. Its `path` points to the `packages/stac` package inside the monorepo.
-- `stac_core` provides the core Stac models and serialization contracts used by widgets, screens, and actions. It is overridden so the app uses the matching Git revision.
-- `stac_framework` provides framework-level Stac integration and stays on the same repository revision.
-- `stac_logger` provides the Stac logging package and stays on the same repository revision.
+- `stac` is the main Flutter package used directly by the application. It renders screens and provides runtime networking, navigation, forms, theming, and caching. Its `path` points to the `packages/stac` package inside the monorepo.
+- `stac_core` is the pure-Dart package for screen/theme definition files. It provides core models, interfaces, and responsive primitives without depending on Flutter.
+- `stac_framework` provides framework internals such as `StacParser` and `StacActionParser` for custom widgets and actions.
+- `stac_logger` provides cross-platform Stac logging.
 
-The `ref: main` entries intentionally track the current repository branch. This keeps the Stac packages coordinated, but a future change on `main` can change dependency resolution. For reproducible application builds, replace `main` with a tested commit SHA across all four entries.
+The `ref: main` entries intentionally track the current repository branch. This keeps the Stac packages coordinated, but a future change on `main` can change dependency resolution. For reproducible application builds, use a release tag or tested commit SHA across all four entries. After pushing a newer revision, run `flutter pub upgrade stac` (or `flutter pub upgrade` when multiple Git overrides changed).
 
 After changing a package source or revision, run:
 
@@ -399,6 +401,44 @@ fvm flutter pub get
 ```
 
 The Stac CLI is sourced from the same monorepo, but it is installed separately as a global Dart executable. See [Install the Stac CLI](#2-install-the-stac-cli-one-time).
+
+## Responsive widgets
+
+Screen and theme DSL runs on the build machine and has no Flutter `BuildContext`. `stac_core` therefore serializes size expressions that the `stac` runtime evaluates against the current device and parent box.
+
+```dart
+StacResponsiveBox(
+  width: StacSizeExpr.sw * 0.42,
+  maxWidth: StacSizeExpr.px(600),
+  height: (StacSizeExpr.sh * 0.18).clampBetween(min: 96, max: 220),
+  padding: StacEdgeInsetsExpr.symmetric(
+    horizontal: StacSizeExpr.sw * 0.04,
+  ),
+  child: StacContainer(color: '#FF0000'),
+)
+```
+
+`StacSizeExpr` supports screen (`sw`, `sh`), parent (`pw`, `ph`), safe-area, keyboard, text-scale, device-pixel-ratio, orientation, aspect-ratio, and breakpoint values. `StacResponsive` makes its box available as the parent scope and can resolve valid `{{ ... }}` size-expression tokens in ordinary widget properties. Non-size bindings such as `{{name}}` and `{{price}}` remain unchanged for normal data binding.
+
+See the [`stac_core` responsive documentation](https://github.com/smoke-trees/st_sdui/blob/main/packages/stac_core/README.md#responsive-widgets) for the complete DSL and JSON reference.
+
+## Local development with Tailscale Funnel
+
+`stac watch` builds JSON into `stac/.dev-build/`, serves it locally on port `8090`, and exposes it through a public Tailscale Funnel HTTPS URL. The CLI passes that URL to the debug Flutter app automatically. Android emulators/devices and iOS simulators/devices can use the same URL; only the development computer needs Tailscale installed, signed in, and connected to the internet.
+
+```sh
+tailscale version
+tailscale up
+tailscale status
+```
+
+If Funnel is not enabled for the tailnet, the CLI prints an authorization URL. You can also enable it once with:
+
+```sh
+tailscale funnel http://127.0.0.1:8090
+```
+
+Approve the requested permission, stop that foreground command with `Ctrl+C`, then run `stac watch` again. The CLI starts Funnel automatically after it has been enabled. Testing devices do not need Tailscale, `adb`, or a VPN—only internet access while `stac watch` is running.
 
 ## First-time setup (clone → run)
 
@@ -447,7 +487,7 @@ There is a second URL behind a compile-time flag — see [Runtime routing](#runt
 fvm flutter run
 ```
 
-A plain `flutter run` passes no `STAC_LOCAL_DEV`, so the app fetches **both** data and screen JSON from `backendUrl`. This isolates backend problems before you add the watch loop: a bad `backendUrl` otherwise surfaces as a blank splash or an auth error with no obvious cause.
+A plain `flutter run` passes no `STAC_DEV_BASE_URL`, so the app fetches **both** data and screen JSON from `backendUrl`. This isolates backend problems before you add the watch loop: a bad `backendUrl` otherwise surfaces as a blank splash or an auth error with no obvious cause.
 
 The first screen is `splash_page`, which auto-routes after ~5s to `sign_in` (no saved user) or `bottom_navigation` (user persisted in Hive).
 
@@ -457,7 +497,7 @@ The first screen is `splash_page`, which auto-routes after ~5s to `sign_in` (no 
 stac watch
 ```
 
-That's the whole setup. Local dev routing is **on by default** — no flag needed.
+That's the whole setup. `stac watch` starts the local server, enables Tailscale Funnel, prints the public HTTPS URL, and passes it to the debug app automatically.
 
 ## Daily loop: the watch session
 
@@ -468,48 +508,43 @@ That's the whole setup. Local dev routing is **on by default** — no flag neede
 On startup:
 
 1. Reads the build ledger `.stac/manifest.json`.
-2. Starts a local dev server on **`0.0.0.0:8090`**.
-3. Spawns `flutter run --machine`, passing `--dart-define=STAC_LOCAL_DEV`, `STAC_DEV_HOST`, `STAC_DEV_PORT`.
-4. Scans `stac/` and `lib/` for `@StacScreen` / `@StacThemeRef` entries, builds every screen and theme once into **`stac/.dev-build/`**, then watches both directories.
+2. Scans `stac/` and `lib/` for `@StacScreen` / `@StacThemeRef` entries and builds every screen and theme once into **`stac/.dev-build/`**.
+3. Starts a local HTTP server and publishes it through Tailscale Funnel as one public HTTPS URL.
+4. Passes the Funnel URL to the debug Flutter app automatically, so Android and iOS targets all use the same endpoint.
 
-On every save of a `.dart` file (excluding `*.g.dart`, debounced 300 ms):
+On every save of a `.dart` file (excluding `*.g.dart`):
 
-1. Rebuilds only the screens/themes that transitively depend on the changed file — so editing a model or parser under `lib/` rebuilds the screens that import it.
-2. Writes new JSON to `stac/.dev-build/` and bumps the version in `.stac/manifest.json` **only when the output hash actually changed**.
-3. Triggers a **hot reload** (`app.restart`, `fullRestart: false`) via the Flutter daemon. A changed **theme** forces a **hot restart** (`fullRestart: true`), because themes are memoized at `Stac.initialize` time.
+1. Rebuilds only the screens/themes that transitively depend on the changed file.
+2. Writes new JSON to `stac/.dev-build/` and bumps the version only when the output hash changed.
+3. Triggers a hot reload. A changed theme forces a hot restart because themes are resolved during `Stac.initialize`.
 
 Failed builds are skipped: the error is printed and the last good build stays live.
 
-The dev server mimics the backend's two read endpoints, so the app fetches screens from it instead:
+The server matches the Stac Cloud request format. The app supplies its version from `package_info_plus`:
 
 ```
-GET /app-screens?screenName=<name>   -> {"result": [{"name", "screenJson", "version"}]}
-GET /app-themes?themeName=<name>     -> {"result": [{"name", "themeJson", "version"}]}
+GET /app-screens/get-latest?screenName=<name>&appVersion=<version>
+GET /app-themes/get-latest?themeName=<name>&appVersion=<version>
 ```
 
-Stop with **`q`** or **Ctrl+C** — both restore the terminal, cancel the watchers, stop the dev server, and kill the spawned app.
+Every request is logged with its status, duration, and client IP. Stop with **`q`** or **Ctrl+C**.
 
 ### Options
 
 | Flag | Default | Effect |
 |------|---------|--------|
-| `--port <n>` | `8090` | Dev server port, also passed as `STAC_DEV_PORT`. |
-| `--host <s>` | `192.168.1.17` | Host advertised to the app as `STAC_DEV_HOST`. Use your machine's LAN IP for physical devices, `localhost` for emulators on the same machine. |
+| `--port <n>` | `8090` | Local development server port. |
 | `--device <id>` | auto | Passed to `flutter run` as `-d <id>`. `flutter devices` lists IDs. |
 | `--no-app` | app spawns | Run the server and watch loop without launching the app. |
-| `--no-dev` | dev routing on | Opts **out** of local-dev routing: the app is built with `STAC_LOCAL_DEV=false` and fetches screens from `backendUrl` instead of the dev server. |
 
-### Two common invocations
+### Common invocations
 
 ```sh
-# Standard local loop
+# Build, watch, serve through Funnel, and launch the debug app
 stac watch
 
-# Watch only, no app — you run the app yourself (e.g. from an IDE)
+# Watch and serve without launching the app
 stac watch --no-app
-# then, from another terminal:
-fvm flutter run --dart-define=STAC_LOCAL_DEV=true \
-  --dart-define=STAC_DEV_HOST=localhost --dart-define=STAC_DEV_PORT=8090
 ```
 
 ### Editing a screen
@@ -517,7 +552,7 @@ fvm flutter run --dart-define=STAC_LOCAL_DEV=true \
 Open the reference application's `st_splash_page.dart` DSL file:
 
 ```dart
-import 'package:stac/stac_core.dart';
+import 'package:stac_core/stac_core.dart';
 import 'package:smoketrees_app_template/features/splash/stac/splash_page_model.dart';
 import 'package:smoketrees_app_template/utils/assets.dart';
 
@@ -576,9 +611,20 @@ stac build
 
 Scans the project for `@StacScreen` and `@StacThemeRef`, then writes generated JSON under `stac/.build/`. `--validate` is accepted but is currently a no-op.
 
+### Standalone server (`stac server`)
+
+`stac server` serves already-built JSON without watching files or launching Flutter:
+
+```sh
+stac build
+stac server
+```
+
+It serves `stac/.build/` by default (`--output-dir` overrides this) through the same screen/theme endpoints documented above. Press `R`/`r` to reload the manifest and JSON from disk, or `Q`/`q`/`Ctrl+C` to stop. Use `--port <n>` for a custom port or `--no-funnel` for a local-only server.
+
 ### Same commands on iOS and Android
 
-All of the above — `stac watch` and `stac build` — are platform-agnostic. The CLI produces the same JSON regardless of which platform the app runs on, so **there is no separate command set for iOS vs Android**. The only platform-dependent bit is which device you point the watch loop at via `--device` (a simulator/emulator ID from `flutter devices`), and even then the command is identical.
+All of the above — `stac watch`, `stac server`, and `stac build` — are platform-agnostic. The CLI produces the same JSON regardless of which platform the app runs on, so **there is no separate command set for iOS vs Android**. The only platform-dependent bit is which device you point the watch loop at via `--device` (a simulator/emulator ID from `flutter devices`), and even then the command is identical.
 
 ## Project anatomy
 
@@ -1108,24 +1154,25 @@ Only step 4 reaches production. Steps 1–3 are DSL, so nothing here needs an ap
 - **`children` is serialised in full.** Every sub-page ships inside one `wildcard_page` JSON payload on every fetch. It's one route, so it's one document — split into a second wildcard route if a page group ever gets genuinely large.
 - **Deep links still need a real route.** `wildcard_page` is reachable by name, but a specific sub-page isn't addressable from outside the app unless you pass the argument yourself.
 
-## Runtime routing: `AppUrls` and `STAC_LOCAL_DEV`
+## Runtime routing: `AppUrls` and `STAC_DEV_BASE_URL`
 
 The app keeps **two** base URLs on purpose in its URL configuration:
 
-- `AppUrls.backendUrl` — used by `backendDio` for all data (auth, to-dos, settings).
+- `AppUrls.backendUrl` — used by `backendDio` for application data (auth, to-dos, settings).
 - `AppUrls.stacBaseUrl` — used by `Stac.initialize` for screen and theme JSON only.
 
-`stacBaseUrl` is a compile-time getter:
+`stacBaseUrl` uses the Funnel URL injected by `stac watch` in debug builds and falls back to the production backend otherwise:
 
 ```dart
-const isLocalDev = bool.fromEnvironment('STAC_LOCAL_DEV');
-if (!isLocalDev) return backendUrl;                       // real backend
-const host = String.fromEnvironment('STAC_DEV_HOST', defaultValue: 'localhost');
-const port = String.fromEnvironment('STAC_DEV_PORT', defaultValue: '8070');
-return 'http://$host:$port';                              // local dev server
+const devBaseUrl = String.fromEnvironment('STAC_DEV_BASE_URL');
+
+if (kDebugMode && devBaseUrl.isNotEmpty) {
+  return devBaseUrl;
+}
+return backendUrl;
 ```
 
-So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DEV=true`. The watch session passes that define (plus host and port) automatically; a plain `flutter run` doesn't, and stays on `backendUrl`. `main.dart` reads the same flag to switch Stac's cache to `networkOnly` during dev.
+Do not copy the generated Funnel URL into application code. The CLI supplies it to debug builds, while release builds continue to use the configured production base URL.
 
 ## CLI reference
 
@@ -1135,14 +1182,15 @@ So one codebase points at either target, decided by `--dart-define=STAC_LOCAL_DE
 |---------|---------|
 | `stac init` | Scaffold a Stac project (`stac/` sample, `default_stac_options.dart`, optional skills install). |
 | `stac build` | Compile annotated DSL files into `stac/.build/` JSON. |
-| `stac watch` | Local hot-reload loop (see [Daily loop](#daily-loop-the-watch-session)). |
+| `stac watch` | Build/watch DSL and run the local server through Tailscale Funnel (see [Daily loop](#daily-loop-the-watch-session)). |
+| `stac server` | Serve existing `stac/.build/` JSON without watching files or launching Flutter. |
 | `stac login` / `logout` / `status` | Cloud auth. |
 | `stac project create --name <n>` / `project list` | Cloud project management. |
 | `stac skills add` | Install a skill. |
 | `stac upgrade` | Self-update the CLI (`--version`, `--force`). |
 | `stac --version` / `--help` | Version / usage. |
 
-Other flags worth knowing: `build --project <dir>`, `watch --port/--host/--device/--no-app/--no-dev`, `project create --description <d>`, global `-v/--verbose`.
+Other flags worth knowing: `build --project <dir>`, `watch --port/--device/--no-app`, `server --port/--output-dir/--no-funnel`, `project create --description <d>`, global `-v/--verbose`.
 
 ## TODO
 
@@ -1150,10 +1198,10 @@ Other flags worth knowing: `build --project <dir>`, `watch --port/--host/--devic
 
 ## Gotchas & sharp edges
 
-- **Port 8090 must be free.** A second watch session (or any leftover process) makes startup die with a raw `SocketException: Failed to create server socket … errno = 10048` rather than a friendly message. Pass `--port 8099` or kill the old session.
-- **`stacBaseUrl` and `STAC_LOCAL_DEV` are compile-time.** Editing `urls.dart` needs a full restart of the spawned app (`q`, then relaunch) — a hot reload won't pick it up. Process env vars can't change `fromEnvironment` values either; only `--dart-define` can, which is why the `STAC_BASE_API_URL` env var in `.vscode/launch.json` has no effect on the app.
-- **Default host is a hardcoded LAN IP** (`192.168.1.17`). On another network the spawned app can't reach the dev server until you pass `--host` (use `localhost` for an emulator on the same machine).
-- **Port mismatch in the fallback.** The watch server defaults to `8090`, but `urls.dart`'s `STAC_DEV_PORT` fallback is `8070`. It only matters if the define goes missing — the watch session always passes the real port.
+- **Port 8090 must be free.** Stop an older `stac watch`/`stac server` process or pass a custom `--port` if the local server cannot bind.
+- **Tailscale is required on the development computer.** If the `tailscale` command is unavailable, install it and restart the terminal so `PATH` is refreshed. If Funnel is not enabled for the tailnet, approve the authorization URL printed by the CLI and rerun `stac watch`.
+- **The Funnel URL is temporary.** Devices can load it only while `stac watch` or `stac server` is running; do not commit the generated URL or change it per device.
+- **`STAC_DEV_BASE_URL` is compile-time.** It only affects debug builds and is supplied automatically by `stac watch`; release builds continue to use the configured backend URL.
 - **Themes cost a hot restart**, so editing `st_theme.dart` is a slower cycle than editing a screen.
 - **The `stac` git dependency is unpinned** (`ref: main`). Pin a commit SHA if you need reproducible builds.
 - **An export alone never registers a parser or action.** Forgetting the registry entry (`parsers` / `actionParsers` list) is the single most common cause of an unrendered widget or a no-op action — check the registry before debugging the parser logic itself.
